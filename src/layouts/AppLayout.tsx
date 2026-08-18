@@ -4,7 +4,7 @@ import { Header } from "@/components/layout/Header";
 
 interface AppLayoutProps {
   title: string;
-  subtitle?: string;
+  subtitle?: string | undefined;
   children: ReactNode;
 }
 
