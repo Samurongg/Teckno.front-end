@@ -1,7 +1,5 @@
 # Delivery Insight
 
-Quiero crear la interfaz frontend de una aplicación web llamada TecnoMarket Analytics.
-
 IMPORTANTE: esta aplicación NO es un e-commerce y NO es un sistema completo de gestión de pedidos.
 
 La aplicación representa una plataforma de Data Analytics + Machine Learning orientada a la predicción de retrasos en entregas.
@@ -50,7 +48,7 @@ La aplicación debe sentirse como una plataforma profesional de Analytics / Busi
 
 2. TECNOLOGÍAS DEL FRONTEND
 
-Utilizar:
+Se utilizo:
 
 React
 
@@ -68,43 +66,8 @@ La interfaz debe estar preparada para posteriormente conectarse a un backend med
 
 Por ahora se pueden utilizar datos mock, pero la arquitectura debe permitir reemplazarlos posteriormente por llamadas reales a FastAPI.
 
-3. ESTILO VISUAL
 
-Quiero un diseño:
-
-Moderno.
-
-Profesional.
-
-Minimalista.
-
-Tecnológico.
-
-Orientado a dashboards empresariales.
-
-Limpio.
-
-Fácil de navegar.
-
-Debe parecer una aplicación utilizada por un equipo de:
-
-Logística.
-
-Data Analytics.
-
-Operaciones.
-
-Business Intelligence.
-
-NO debe parecer una tienda online.
-
-Utilizar una interfaz tipo SaaS empresarial.
-
-La navegación principal debe utilizar un sidebar lateral.
-
-4. ESTRUCTURA PRINCIPAL
-
-Crear una aplicación con las siguientes secciones:
+3. ESTRUCTURA PRINCIPAL
 
 Dashboard
 
@@ -142,17 +105,16 @@ Tendencia mensual.
 
 Utilizar cards/KPIs y gráficos modernos.
 
-5. MÓDULO PEDIDOS
+4. MÓDULO PEDIDOS
 
 Ruta:
 
 /orders
 
-Esta pantalla NO debe permitir crear pedidos como si fuera un ERP.
 
 Su función es consultar y analizar los pedidos existentes provenientes de una fuente externa.
 
-Crear una tabla profesional con columnas como:
+TABLA:
 
 ID del pedido.
 
@@ -194,7 +156,7 @@ Filtro por estado.
 
 Al hacer clic en un pedido, mostrar un panel/modal con sus detalles.
 
-6. MÓDULO PREDICCIÓN
+5. MÓDULO PREDICCIÓN
 
 Ruta:
 
@@ -260,7 +222,7 @@ POST /api/predict
 
 hacia un backend FastAPI.
 
-7. MÓDULO ANALÍTICA
+6. MÓDULO ANALÍTICA
 
 Ruta:
 
@@ -490,38 +452,15 @@ No implementar todavía un backend real.
 
 15. RESULTADO ESPERADO
 
-Quiero que la aplicación final transmita claramente esta idea:
+La aplicación final transmite claramente esta idea:
 
 "TecnoMarket Analytics utiliza datos históricos de pedidos y Machine Learning para analizar y predecir el riesgo de retrasos en las entregas."
 
-La aplicación debe verse como un producto tecnológico real y profesional.
-
-No quiero una tienda online.
-
-No quiero un ERP.
-
-No quiero un CMS de pedidos.
-
-Quiero una plataforma de:
+Es una plataforma de:
 
 DATA ANALYTICS + MACHINE LEARNING + LOGÍSTICA
 
-Construye la interfaz completa con navegación funcional entre las páginas y datos mock realistas.
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/57f51221-afd1-4322-ba74-4153714b8384).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
+COMANDOS PARA INICIALIZAR EL TRABAJO
 ```sh
 git clone <this-repository-url>
 cd <repository-name>
