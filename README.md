@@ -1,469 +1,115 @@
-# Delivery Insight
+# TecnoMarket Analytics — Frontend
 
-IMPORTANTE: esta aplicación NO es un e-commerce y NO es un sistema completo de gestión de pedidos.
+## Descripción del trabajo
 
-La aplicación representa una plataforma de Data Analytics + Machine Learning orientada a la predicción de retrasos en entregas.
+TecnoMarket Analytics es una plataforma web de Data Analytics y Machine Learning para una empresa ficticia de tecnología. Convierte los datos históricos de pedidos en indicadores, reportes y predicciones de retraso que apoyan las decisiones logísticas.
 
-1. CONTEXTO DEL PROYECTO
+La aplicación no es un e-commerce y no crea pedidos, pagos ni inventario. Consume la API del backend para analizar pedidos ya existentes y estimar el riesgo de entrega tardía.
 
-TecnoMarket es una empresa ficticia de venta de productos tecnológicos que ya posee otro sistema externo donde se generan y gestionan sus pedidos.
+## Qué puede hacer el usuario
 
-Nuestra aplicación no reemplaza ese sistema.
+- Iniciar y cerrar una sesión de demostración.
+- Consultar el dashboard de rendimiento logístico.
+- Explorar pedidos históricos y ver su información.
+- Simular un pedido para calcular su riesgo de retraso.
+- Comparar retrasos por región, envío, distancia y tiempo de preparación.
+- Revisar las métricas, clases e importancia de variables del modelo ML.
 
-Los pedidos provienen de una fuente externa y nuestra aplicación utiliza esos datos para:
+## Tecnologías
 
-Analizar pedidos históricos.
+| Tecnología | Uso |
+| --- | --- |
+| React 19 | Interfaz de usuario |
+| TypeScript | Tipado y mantenimiento del código |
+| Vite / TanStack Start | Desarrollo, rutas y compilación |
+| TanStack Router | Navegación entre pantallas |
+| TanStack Query | Consultas y estado de datos remotos |
+| Tailwind CSS | Estilos responsivos |
+| Radix UI | Componentes accesibles |
+| Recharts | Gráficos del dashboard y analítica |
+| FastAPI REST | Fuente de datos y predicciones |
 
-Visualizar indicadores logísticos.
+## Requisitos
 
-Filtrar y consultar pedidos.
+- Node.js 20 o superior.
+- El backend de TecnoMarket Analytics activo en el puerto `8000`.
 
-Analizar patrones de retrasos.
+## Instalación y ejecución
 
-Realizar predicciones mediante Machine Learning.
-
-Ayudar a la toma de decisiones.
-
-Por lo tanto:
-
-NO crear:
-
-Carrito de compras.
-
-Checkout.
-
-Pasarela de pagos.
-
-Catálogo de productos como tienda.
-
-Sistema completo de clientes.
-
-Gestión compleja de inventario.
-
-CMS de pedidos.
-
-Registro manual obligatorio de pedidos.
-
-La aplicación debe sentirse como una plataforma profesional de Analytics / Business Intelligence / Machine Learning.
-
-2. TECNOLOGÍAS DEL FRONTEND
-
-Se utilizo:
-
-React
-
-Vite
-
-TypeScript
-
-Tailwind CSS
-
-Componentes modernos y reutilizables.
-
-Diseño responsive.
-
-La interfaz debe estar preparada para posteriormente conectarse a un backend mediante una API REST.
-
-Por ahora se pueden utilizar datos mock, pero la arquitectura debe permitir reemplazarlos posteriormente por llamadas reales a FastAPI.
-
-
-3. ESTRUCTURA PRINCIPAL
-
-Dashboard
-
-Ruta:
-
-/dashboard
-
-Debe ser la pantalla principal.
-
-Mostrar:
-
-Total de pedidos analizados.
-
-Pedidos entregados a tiempo.
-
-Pedidos tardíos.
-
-Porcentaje de retrasos.
-
-Predicciones realizadas.
-
-Nivel de riesgo general.
-
-Agregar gráficos como:
-
-Evolución de entregas tardías.
-
-Pedidos por región.
-
-Retrasos por tipo de envío.
-
-Distribución entre entregas a tiempo y tardías.
-
-Tendencia mensual.
-
-Utilizar cards/KPIs y gráficos modernos.
-
-4. MÓDULO PEDIDOS
-
-Ruta:
-
-/orders
-
-
-Su función es consultar y analizar los pedidos existentes provenientes de una fuente externa.
-
-TABLA:
-
-ID del pedido.
-
-Fecha.
-
-Región.
-
-Tipo de envío.
-
-Distancia.
-
-Tiempo de preparación.
-
-Cantidad de productos.
-
-Peso.
-
-Estado de entrega.
-
-Riesgo.
-
-Agregar:
-
-Buscador.
-
-Filtros.
-
-Ordenamiento.
-
-Paginación.
-
-Filtro por fecha.
-
-Filtro por región.
-
-Filtro por tipo de envío.
-
-Filtro por estado.
-
-Al hacer clic en un pedido, mostrar un panel/modal con sus detalles.
-
-5. MÓDULO PREDICCIÓN
-
-Ruta:
-
-/prediction
-
-Esta es una de las partes principales de la aplicación.
-
-Crear una interfaz llamada:
-
-Predicción de entrega
-
-El usuario debe introducir las características de un pedido para obtener una predicción.
-
-Ejemplo de campos:
-
-Tipo de envío.
-
-Distancia.
-
-Tiempo estimado.
-
-Tiempo de preparación.
-
-Cantidad de productos.
-
-Peso del pedido.
-
-Región.
-
-Prioridad.
-
-Día de la semana.
-
-Carga logística.
-
-Después de pulsar:
-
-"Realizar predicción"
-
-mostrar un resultado visual.
-
-Ejemplo:
-
-Predicción:
-
-ENTREGA TARDÍA
-
-Probabilidad:
-
-78%
-
-Nivel de riesgo:
-
-ALTO
-
-También mostrar una explicación visual de los factores que más contribuyeron al riesgo.
-
-IMPORTANTE:
-
-La interfaz debe estar preparada para que posteriormente el formulario realice:
-
-POST /api/predict
-
-hacia un backend FastAPI.
-
-6. MÓDULO ANALÍTICA
-
-Ruta:
-
-/analytics
-
-Crear una sección dedicada al análisis de datos.
-
-Mostrar gráficos y estadísticas como:
-
-Retrasos por región.
-
-Retrasos por tipo de envío.
-
-Retrasos según distancia.
-
-Retrasos según tiempo de preparación.
-
-Distribución de pedidos.
-
-Tendencias temporales.
-
-Variables asociadas a mayor riesgo.
-
-Debe sentirse como una herramienta de Business Intelligence.
-
-8. MÓDULO MODELO ML
-
-Ruta:
-
-/model
-
-Crear una sección donde se pueda visualizar información del modelo de Machine Learning.
-
-Mostrar:
-
-Modelo seleccionado.
-
-Accuracy.
-
-Precision.
-
-Recall.
-
-F1-score.
-
-ROC-AUC si está disponible.
-
-Fecha de entrenamiento.
-
-Cantidad de registros utilizados.
-
-Distribución de clases.
-
-También mostrar una visualización de:
-
-Importancia de variables
-
-Por ejemplo:
-
-Tiempo de preparación — 32%
-
-Distancia — 25%
-
-Tipo de envío — 18%
-
-Carga logística — 13%
-
-Peso — 7%
-
-Otros — 5%
-
-Los datos serán mock inicialmente.
-
-9. NAVEGACIÓN
-
-El sidebar debe contener aproximadamente:
-
-Dashboard
-
-Pedidos
-
-Predicción
-
-Analítica
-
-Modelo ML
-
-En la parte inferior:
-
-Configuración
-
-Perfil
-
-Agregar un header superior con:
-
-Nombre de la sección.
-
-Buscador opcional.
-
-Notificaciones.
-
-Perfil del usuario.
-
-10. DASHBOARD — INFORMACIÓN DE EJEMPLO
-
-Utilizar datos mock realistas.
-
-Por ejemplo:
-
-Total pedidos:
-
-5,000
-
-Entregas a tiempo:
-
-4,125
-
-Entregas tardías:
-
-875
-
-Tasa de retrasos:
-
-17.5%
-
-Predicciones:
-
-1,248
-
-Estos datos solamente serán utilizados para visualizar la interfaz.
-
-11. COMPONENTES
-
-Crear componentes reutilizables.
-
-Por ejemplo:
-
-Sidebar
-
-Header
-
-KPI Card
-
-Charts
-
-DataTable
-
-FilterBar
-
-PredictionForm
-
-PredictionResult
-
-RiskBadge
-
-OrderDetails
-
-ModelMetrics
-
-LoadingState
-
-EmptyState
-
-12. RESPONSIVE DESIGN
-
-La aplicación debe funcionar correctamente en:
-
-Desktop.
-
-Laptop.
-
-Tablet.
-
-La prioridad visual es desktop porque será utilizada principalmente como dashboard empresarial.
-
-13. ARQUITECTURA DEL FRONTEND
-
-Organizar el código de forma limpia.
-
-Una estructura aproximada:
-
-frontend/
-
-src/
-
-components/
-
-pages/
-
-services/
-
-hooks/
-
-types/
-
-layouts/
-
-lib/
-
-App.tsx
-
-No colocar toda la aplicación en un único archivo.
-
-Separar componentes y páginas.
-
-14. PREPARACIÓN PARA BACKEND
-
-Aunque inicialmente se utilicen datos mock, crear una capa de servicios para que posteriormente podamos conectar FastAPI.
-
-Por ejemplo:
-
-src/services/api.ts
-
-Y servicios conceptuales como:
-
-getOrders()
-
-getDashboard()
-
-getAnalytics()
-
-predictDelivery()
-
-getModelInfo()
-
-No implementar todavía un backend real.
-
-15. RESULTADO ESPERADO
-
-La aplicación final transmite claramente esta idea:
-
-"TecnoMarket Analytics utiliza datos históricos de pedidos y Machine Learning para analizar y predecir el riesgo de retrasos en las entregas."
-
-Es una plataforma de:
-
-DATA ANALYTICS + MACHINE LEARNING + LOGÍSTICA
-
-COMANDOS PARA INICIALIZAR EL TRABAJO
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+```powershell
+cd C:\Users\adria\Desktop\TECKNOFRONT\Teckno.front-end
+npm install
 npm run dev
+```
+
+Abre la URL que indique la consola, normalmente `http://localhost:3000` o `http://localhost:5173`.
+
+La variable `VITE_API_BASE_URL` se configura en `.env` y por defecto apunta a:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+## Manual de usuario
+
+### 1. Iniciar sesión
+
+Al abrir la aplicación aparece la pantalla de acceso. Usa las credenciales de demostración:
+
+| Correo | `analyst@tecnomarket.pe` |
+| Contraseña | `teckno2026` |
+
+La sesión de demostración se guarda únicamente en el navegador. Para salir, pulsa el icono de cierre de sesión en la parte superior derecha.
+
+> Este login es demostrativo. Para un entorno productivo se requiere autenticación real en el backend, contraseñas cifradas y tokens de acceso.
+
+### 2. Dashboard
+
+Es la pantalla principal. Resume el total de pedidos, entregas puntuales y tardías, tasa de retraso, cantidad de predicciones y riesgo general. Los gráficos muestran evolución mensual, distribución de entregas, pedidos por región y retrasos por tipo de envío.
+
+### 3. Pedidos
+
+Permite revisar la información histórica enviada desde la base de datos: fecha, región, distancia, envío, carga, peso y estado de entrega. Selecciona un pedido para ver su detalle.
+
+### 4. Predicción de entrega
+
+Completa las características del pedido y pulsa **Realizar predicción**. El sistema envía los datos al backend y muestra:
+
+- Resultado: entrega a tiempo o tardía.
+- Probabilidad de retraso.
+- Nivel de riesgo: bajo, medio o alto.
+
+Los valores deben corresponder a un pedido plausible; el backend valida distancia, peso, cantidad y tiempos antes de ejecutar el modelo.
+
+### 5. Analítica
+
+Muestra comparaciones de tasas de retraso por región, tipo de envío, distancia y tiempo de preparación, además de distribución de pedidos y tendencia temporal. Todas las gráficas consumen los agregados generados por la API.
+
+### 6. Modelo ML
+
+Presenta el algoritmo seleccionado, fecha de entrenamiento, número de registros, métricas de evaluación e importancia global de las variables. La importancia es calculada desde el modelo cargado, no con porcentajes visuales simulados.
+
+### 7. Perfil y configuración
+
+El perfil muestra la cuenta de demostración y su actividad. La configuración contiene opciones de presentación de la plataforma.
+
+## Conexión con el backend
+
+Antes de usar el frontend, inicia el backend en otra terminal:
+
+```powershell
+cd C:\Users\adria\Desktop\TECKNOBACK\Teckno.back-end
+.\.venv\Scripts\Activate.ps1
+uvicorn app.main:app --reload --port 8000
+```
+
+Si la pantalla muestra un error de conexión, comprueba primero `http://127.0.0.1:8000/api/health`. Debe responder con el estado `online`.
+
+## Comandos útiles
+
+```powershell
+npm run dev      # Ejecuta el entorno de desarrollo
+npm run lint     # Revisa calidad de código
+npm run build    # Genera la compilación de producción
+npm run preview  # Previsualiza la compilación
 ```
