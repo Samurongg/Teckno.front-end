@@ -41,12 +41,13 @@ function PredictionPage() {
       subtitle="Simula un pedido y obtén su probabilidad de retraso"
     >
       <div className="grid gap-4 lg:grid-cols-2">
-        <PredictionForm
-          onSubmit={(input) => mutation.mutate(input)}
-          loading={mutation.isPending}
-        />
+        <PredictionForm onSubmit={(input) => mutation.mutate(input)} loading={mutation.isPending} />
 
-        {mutation.isPending ? (
+        {mutation.isError ? (
+          <div className="panel flex min-h-[320px] items-center justify-center p-8 text-center text-sm text-destructive">
+            {mutation.error.message}
+          </div>
+        ) : mutation.isPending ? (
           <div className="panel">
             <LoadingState label="Ejecutando inferencia del modelo…" />
           </div>
@@ -59,9 +60,8 @@ function PredictionPage() {
             </span>
             <p className="text-sm font-medium">Sin predicción todavía</p>
             <p className="max-w-sm text-xs text-muted-foreground">
-              Completa las características del pedido y pulsa “Realizar
-              predicción” para obtener la probabilidad de entrega tardía y los
-              factores de riesgo asociados.
+              Completa las características del pedido y pulsa “Realizar predicción” para obtener la
+              probabilidad de entrega tardía y los factores de riesgo asociados.
             </p>
           </div>
         )}

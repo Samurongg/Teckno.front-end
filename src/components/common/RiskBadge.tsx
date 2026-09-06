@@ -7,13 +7,7 @@ const styles: Record<RiskLevel, string> = {
   ALTO: "bg-destructive/15 text-destructive border-destructive/30",
 };
 
-export function RiskBadge({
-  level,
-  className,
-}: {
-  level: RiskLevel;
-  className?: string;
-}) {
+export function RiskBadge({ level, className }: { level: RiskLevel; className?: string }) {
   return (
     <span
       className={cn(

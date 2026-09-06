@@ -15,7 +15,7 @@ import {
   Legend,
 } from "recharts";
 import { AppLayout } from "@/layouts/AppLayout";
-import { LoadingState } from "@/components/common/States";
+import { ErrorState, LoadingState } from "@/components/common/States";
 import { ChartCard, axisProps, tooltipStyle } from "@/components/charts/ChartCard";
 import { getModelInfo } from "@/services/api";
 
@@ -41,16 +41,14 @@ export const Route = createFileRoute("/model")({
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="panel p-5">
-      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-        {label}
-      </p>
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p>
     </div>
   );
 }
 
 function ModelPage() {
-  const { data, isLoading } = useQuery({
+  const { data, isError, error, isLoading } = useQuery({
     queryKey: ["model"],
     queryFn: getModelInfo,
   });
@@ -60,7 +58,9 @@ function ModelPage() {
       title="Modelo ML"
       subtitle="Rendimiento y explicabilidad del modelo de predicción de retrasos"
     >
-      {isLoading || !data ? (
+      {isError ? (
+        <ErrorState message={error.message} />
+      ) : isLoading || !data ? (
         <LoadingState label="Cargando información del modelo…" />
       ) : (
         <>
@@ -70,9 +70,7 @@ function ModelPage() {
             </span>
             <div>
               <p className="text-base font-semibold">{data.name}</p>
-              <p className="text-xs text-muted-foreground">
-                Modelo seleccionado en producción
-              </p>
+              <p className="text-xs text-muted-foreground">Modelo seleccionado en producción</p>
             </div>
             <div className="flex flex-wrap gap-6 text-xs">
               <span className="inline-flex items-center gap-2">
@@ -106,12 +104,7 @@ function ModelPage() {
                 <BarChart data={data.featureImportance} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis type="number" {...axisProps} />
-                  <YAxis
-                    type="category"
-                    dataKey="feature"
-                    width={150}
-                    {...axisProps}
-                  />
+                  <YAxis type="category" dataKey="feature" width={150} {...axisProps} />
                   <Tooltip {...tooltipStyle} />
                   <Bar
                     dataKey="importance"
@@ -123,10 +116,7 @@ function ModelPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard
-              title="Distribución de clases"
-              description="Dataset de entrenamiento"
-            >
+            <ChartCard title="Distribución de clases" description="Dataset de entrenamiento">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -138,10 +128,7 @@ function ModelPage() {
                     paddingAngle={3}
                   >
                     {data.classDistribution.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={i === 0 ? "var(--chart-2)" : "var(--chart-4)"}
-                      />
+                      <Cell key={i} fill={i === 0 ? "var(--chart-2)" : "var(--chart-4)"} />
                     ))}
                   </Pie>
                   <Tooltip {...tooltipStyle} />

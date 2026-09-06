@@ -1,13 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Activity,
-  AlertTriangle,
-  CheckCircle2,
-  Package,
-  Percent,
-  ShieldAlert,
-} from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle2, Package, Percent, ShieldAlert } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -27,14 +20,9 @@ import {
 } from "recharts";
 import { AppLayout } from "@/layouts/AppLayout";
 import { KpiCard } from "@/components/common/KpiCard";
-import { LoadingState } from "@/components/common/States";
+import { ErrorState, LoadingState } from "@/components/common/States";
 import { RiskBadge } from "@/components/common/RiskBadge";
-import {
-  CHART_COLORS,
-  ChartCard,
-  axisProps,
-  tooltipStyle,
-} from "@/components/charts/ChartCard";
+import { CHART_COLORS, ChartCard, axisProps, tooltipStyle } from "@/components/charts/ChartCard";
 import { getDashboard } from "@/services/api";
 
 export const Route = createFileRoute("/dashboard")({
@@ -43,14 +31,12 @@ export const Route = createFileRoute("/dashboard")({
       { title: "Dashboard logístico — TecnoMarket Analytics" },
       {
         name: "description",
-        content:
-          "KPIs de entregas, retrasos y predicciones de riesgo logístico de TecnoMarket.",
+        content: "KPIs de entregas, retrasos y predicciones de riesgo logístico de TecnoMarket.",
       },
       { property: "og:title", content: "Dashboard — TecnoMarket Analytics" },
       {
         property: "og:description",
-        content:
-          "Indicadores logísticos y predicción de retrasos con Machine Learning.",
+        content: "Indicadores logísticos y predicción de retrasos con Machine Learning.",
       },
     ],
   }),
@@ -58,7 +44,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-  const { data, isLoading } = useQuery({
+  const { data, isError, error, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: getDashboard,
   });
@@ -68,7 +54,9 @@ function DashboardPage() {
       title="Dashboard"
       subtitle="Visión general de la operación logística y del riesgo de retrasos"
     >
-      {isLoading || !data ? (
+      {isError ? (
+        <ErrorState message={error.message} />
+      ) : isLoading || !data ? (
         <LoadingState />
       ) : (
         <>
@@ -126,24 +114,13 @@ function DashboardPage() {
           </div>
 
           <div className="grid gap-4 xl:grid-cols-2">
-            <ChartCard
-              title="Evolución de entregas tardías"
-              description="Pedidos tardíos por mes"
-            >
+            <ChartCard title="Evolución de entregas tardías" description="Pedidos tardíos por mes">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data.lateTrend}>
                   <defs>
                     <linearGradient id="lateGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="0%"
-                        stopColor="var(--chart-4)"
-                        stopOpacity={0.55}
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor="var(--chart-4)"
-                        stopOpacity={0}
-                      />
+                      <stop offset="0%" stopColor="var(--chart-4)" stopOpacity={0.55} />
+                      <stop offset="100%" stopColor="var(--chart-4)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -162,10 +139,7 @@ function DashboardPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard
-              title="Pedidos por región"
-              description="Volumen total y pedidos tardíos"
-            >
+            <ChartCard title="Pedidos por región" description="Volumen total y pedidos tardíos">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.byRegion}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -179,30 +153,17 @@ function DashboardPage() {
                     fill="var(--chart-1)"
                     radius={[4, 4, 0, 0]}
                   />
-                  <Bar
-                    dataKey="late"
-                    name="Tardíos"
-                    fill="var(--chart-4)"
-                    radius={[4, 4, 0, 0]}
-                  />
+                  <Bar dataKey="late" name="Tardíos" fill="var(--chart-4)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard
-              title="Retrasos por tipo de envío"
-              description="Tasa de retraso (%)"
-            >
+            <ChartCard title="Retrasos por tipo de envío" description="Tasa de retraso (%)">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.byShipping} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis type="number" {...axisProps} />
-                  <YAxis
-                    type="category"
-                    dataKey="type"
-                    width={90}
-                    {...axisProps}
-                  />
+                  <YAxis type="category" dataKey="type" width={90} {...axisProps} />
                   <Tooltip {...tooltipStyle} />
                   <Bar
                     dataKey="lateRate"
@@ -214,10 +175,7 @@ function DashboardPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard
-              title="Distribución de entregas"
-              description="A tiempo vs. tardías"
-            >
+            <ChartCard title="Distribución de entregas" description="A tiempo vs. tardías">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -229,10 +187,7 @@ function DashboardPage() {
                     paddingAngle={3}
                   >
                     {data.distribution.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={i === 0 ? "var(--chart-2)" : "var(--chart-4)"}
-                      />
+                      <Cell key={i} fill={i === 0 ? "var(--chart-2)" : "var(--chart-4)"} />
                     ))}
                   </Pie>
                   <Tooltip {...tooltipStyle} />
@@ -242,10 +197,7 @@ function DashboardPage() {
             </ChartCard>
           </div>
 
-          <ChartCard
-            title="Tendencia mensual"
-            description="Entregas a tiempo vs. tardías"
-          >
+          <ChartCard title="Tendencia mensual" description="Entregas a tiempo vs. tardías">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data.lateTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />

@@ -9,20 +9,8 @@ import type {
   ShippingType,
 } from "@/types";
 
-const regions: Region[] = [
-  "Lima",
-  "Arequipa",
-  "Trujillo",
-  "Cusco",
-  "Piura",
-  "Chiclayo",
-];
-const shippings: ShippingType[] = [
-  "Estándar",
-  "Express",
-  "Same Day",
-  "Programado",
-];
+const regions: Region[] = ["Centro", "Norte", "Sur", "Este", "Oeste"];
+const shippings: ShippingType[] = ["Estándar", "Express", "Mismo Día"];
 const priorities: Priority[] = ["Baja", "Media", "Alta"];
 
 /** Deterministic pseudo-random so SSR and client render identical data. */
@@ -205,12 +193,4 @@ export const MOCK_MODEL: ModelInfo = {
 export const REGIONS = regions;
 export const SHIPPING_TYPES = shippings;
 export const PRIORITIES = priorities;
-export const WEEKDAYS = [
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-  "Domingo",
-];
+export const WEEKDAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];

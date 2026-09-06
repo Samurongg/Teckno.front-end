@@ -24,8 +24,7 @@ const bottomNav = [
 
 const itemBase =
   "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
-const itemActive =
-  "bg-sidebar-accent text-sidebar-primary border-l-2 border-sidebar-primary";
+const itemActive = "bg-sidebar-accent text-sidebar-primary border-l-2 border-sidebar-primary";
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
@@ -73,9 +72,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         ))}
         <div className="mt-3 rounded-lg border border-sidebar-border bg-sidebar-accent/40 p-3">
           <p className="text-xs font-medium">Modelo v2.4.1</p>
-          <p className="text-xs text-muted-foreground">
-            ROC-AUC 0.947 · activo
-          </p>
+          <p className="text-xs text-muted-foreground">ROC-AUC 0.947 · activo</p>
         </div>
       </div>
     </aside>

@@ -7,8 +7,7 @@ export const Route = createFileRoute("/profile")({
       { title: "Perfil de usuario — TecnoMarket Analytics" },
       {
         name: "description",
-        content:
-          "Datos del analista, rol asignado y actividad reciente dentro de la plataforma.",
+        content: "Datos del analista, rol asignado y actividad reciente dentro de la plataforma.",
       },
       { property: "og:title", content: "Perfil — TecnoMarket Analytics" },
       {
@@ -35,9 +34,7 @@ function ProfilePage() {
             AC
           </div>
           <p className="mt-4 text-lg font-semibold">Adriano Caycho</p>
-          <p className="text-xs text-muted-foreground">
-            Data Analyst · Operaciones y Logística
-          </p>
+          <p className="text-xs text-muted-foreground">Data Analyst · Operaciones y Logística</p>
           <dl className="mt-5 space-y-3 text-xs">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Rol</dt>

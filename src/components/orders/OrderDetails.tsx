@@ -12,9 +12,7 @@ import { Progress } from "@/components/ui/progress";
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-border bg-muted/30 p-3">
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
+      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</p>
       <p className="mt-1 text-sm font-medium">{value}</p>
     </div>
   );
@@ -39,8 +37,7 @@ export function OrderDetails({
                 <RiskBadge level={order.risk} />
               </DialogTitle>
               <DialogDescription>
-                Pedido importado desde el sistema externo de TecnoMarket ·{" "}
-                {order.date}
+                Pedido importado desde el sistema externo de TecnoMarket · {order.date}
               </DialogDescription>
             </DialogHeader>
 
@@ -58,9 +55,7 @@ export function OrderDetails({
 
             <div className="rounded-lg border border-border p-4">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">
-                  Probabilidad estimada de retraso
-                </span>
+                <span className="text-muted-foreground">Probabilidad estimada de retraso</span>
                 <span className="font-semibold">{order.riskScore}%</span>
               </div>
               <Progress value={order.riskScore} className="mt-3" />

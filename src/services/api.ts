@@ -1,6 +1,7 @@
-import type {
-  PredictionResultData,
-} from "@/types";
+/* The API adapter progressively normalizes external JSON while the backend contract is migrated. */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import type { PredictionResultData } from "@/types";
 
 export const API_BASE_URL =
   (import.meta.env["VITE_API_BASE_URL"] as string | undefined) ?? "http://127.0.0.1:8000/api";
@@ -14,10 +15,17 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers["Content-Type"] = "application/json";
   }
 
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers,
+    });
+  } catch {
+    throw new Error(
+      "No se pudo conectar con la API. Verifica que el backend esté activo en http://127.0.0.1:8000.",
+    );
+  }
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
@@ -32,9 +40,28 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
 // -------------------------------------------------------------
 function normalizarRegion(region: string): "Centro" | "Norte" | "Sur" | "Este" | "Oeste" {
   const r = (region || "").toLowerCase();
-  if (r.includes("arequipa") || r.includes("sur") || r.includes("cusco") || r.includes("tacna") || r.includes("puno")) return "Sur";
-  if (r.includes("trujillo") || r.includes("piura") || r.includes("norte") || r.includes("chiclayo")) return "Norte";
-  if (r.includes("este") || r.includes("iquitos") || r.includes("tarapoto") || r.includes("ucayali")) return "Este";
+  if (
+    r.includes("arequipa") ||
+    r.includes("sur") ||
+    r.includes("cusco") ||
+    r.includes("tacna") ||
+    r.includes("puno")
+  )
+    return "Sur";
+  if (
+    r.includes("trujillo") ||
+    r.includes("piura") ||
+    r.includes("norte") ||
+    r.includes("chiclayo")
+  )
+    return "Norte";
+  if (
+    r.includes("este") ||
+    r.includes("iquitos") ||
+    r.includes("tarapoto") ||
+    r.includes("ucayali")
+  )
+    return "Este";
   if (r.includes("oeste")) return "Oeste";
   return "Centro";
 }
@@ -58,7 +85,9 @@ function normalizarCargaLogistica(carga: any): "Baja" | "Media" | "Alta" {
   return "Media";
 }
 
-function normalizarDiaSemana(dia: string): "Lunes" | "Martes" | "Miércoles" | "Jueves" | "Viernes" | "Sábado" | "Domingo" {
+function normalizarDiaSemana(
+  dia: string,
+): "Lunes" | "Martes" | "Miércoles" | "Jueves" | "Viernes" | "Sábado" | "Domingo" {
   const d = (dia || "").toLowerCase();
   if (d.includes("lun")) return "Lunes";
   if (d.includes("mar")) return "Martes";
@@ -79,12 +108,12 @@ export async function getDashboard(): Promise<any> {
   const raw = await request<any>("/dashboard");
   const kpis = raw.kpis || {};
 
-  const onTime = kpis.entregas_a_tiempo ?? 4125;
-  const late = kpis.entregas_tardias ?? 875;
-  const totalOrders = kpis.total_pedidos ?? 5000;
-  const lateRate = kpis.tasa_retrasos ?? 17.5;
+  const onTime = kpis.entregas_a_tiempo ?? 0;
+  const late = kpis.entregas_tardias ?? 0;
+  const totalOrders = kpis.total_pedidos ?? 0;
+  const lateRate = kpis.tasa_retrasos ?? 0;
   const predictions = kpis.predicciones_realizadas ?? 0;
-  const globalRisk = (kpis.nivel_riesgo_general || "MEDIO").toUpperCase();
+  const globalRisk = (kpis.nivel_riesgo_general || "BAJO").toUpperCase();
 
   const lateTrend = (raw.evolucion_mensual || []).map((item: any) => ({
     month: item.mes,
@@ -105,11 +134,10 @@ export async function getDashboard(): Promise<any> {
     { name: "Tardías", value: late },
   ];
 
-  const byShipping = [
-    { type: "Estándar", lateRate: 13.8 },
-    { type: "Express", lateRate: 19.4 },
-    { type: "Mismo Día", lateRate: 32.1 },
-  ];
+  const byShipping = (raw.pedidos_por_tipo_envio || []).map((item: any) => ({
+    type: item.tipo,
+    lateRate: item.tasa_retraso,
+  }));
 
   return {
     totalOrders,
@@ -147,20 +175,20 @@ export async function getOrders(): Promise<any[]> {
 
 /** POST /api/predict */
 export async function predictDelivery(input: any): Promise<PredictionResultData> {
-  const horasEstimadas = Number(input.estimatedHours || input.tiempo_estimado_horas || input.estimatedTime || 48);
+  const horasEstimadas = Number(input.estimatedTimeH ?? input.tiempo_estimado_horas ?? 48);
   const diasEstimados = Math.max(1, Math.round(horasEstimadas / 24));
 
   const payload = {
     region: normalizarRegion(input.region),
     tipo_envio: normalizarTipoEnvio(input.shippingType || input.tipo_envio),
-    distancia_km: Number(input.distanceKm || input.distancia_km || 100),
+    distancia_km: Number(input.distanceKm ?? input.distancia_km ?? 100),
     tiempo_estimado_dias: diasEstimados,
-    tiempo_preparacion_horas: Number(input.prepTimeH || input.tiempo_preparacion_horas || 4),
-    cantidad_productos: Number(input.itemCount || input.cantidad_productos || 1),
-    peso_kg: Number(input.weightKg || input.peso_kg || 2),
-    prioridad: (input.priority || input.prioridad || "Media") as "Baja" | "Media" | "Alta",
-    dia_semana: normalizarDiaSemana(input.dayOfWeek || input.dia_semana),
-    carga_logistica: normalizarCargaLogistica(input.logisticLoad || input.carga_logistica),
+    tiempo_preparacion_horas: Number(input.prepTimeH ?? input.tiempo_preparacion_horas ?? 4),
+    cantidad_productos: Number(input.items ?? input.cantidad_productos ?? 1),
+    peso_kg: Number(input.weightKg ?? input.peso_kg ?? 2),
+    prioridad: (input.priority ?? input.prioridad ?? "Media") as "Baja" | "Media" | "Alta",
+    dia_semana: normalizarDiaSemana(input.weekday ?? input.dia_semana),
+    carga_logistica: normalizarCargaLogistica(input.logisticLoad ?? input.carga_logistica),
   };
 
   const res = await request<any>("/predict", {
@@ -172,12 +200,6 @@ export async function predictDelivery(input: any): Promise<PredictionResultData>
     label: res.resultado.toUpperCase(),
     probability: Math.round(res.probabilidad_retraso),
     risk: res.nivel_riesgo.toUpperCase() as "BAJO" | "MEDIO" | "ALTO",
-    factors: [
-      { feature: "Distancia y ruta", contribution: Math.min(100, Math.round((payload.distancia_km / 450) * 100)) },
-      { feature: "Tiempo de preparación", contribution: Math.min(100, Math.round((payload.tiempo_preparacion_horas / 20) * 100)) },
-      { feature: "Carga logística", contribution: payload.carga_logistica === "Alta" ? 85 : payload.carga_logistica === "Media" ? 50 : 20 },
-      { feature: "Tipo de envío", contribution: payload.tipo_envio === "Mismo Día" ? 90 : payload.tipo_envio === "Express" ? 55 : 25 },
-    ],
   };
 }
 
@@ -204,12 +226,10 @@ export async function getAnalytics(): Promise<any> {
   }));
 
   // 4. lateByPrepTime -> [{ bucket: string, lateRate: number }]
-  const lateByPrepTime = [
-    { bucket: "0 - 4h", lateRate: 8.4 },
-    { bucket: "4 - 8h", lateRate: 15.2 },
-    { bucket: "8 - 12h", lateRate: 26.8 },
-    { bucket: "> 12h", lateRate: 41.5 },
-  ];
+  const lateByPrepTime = (raw.distribucion_tiempo_preparacion || []).map((item: any) => ({
+    bucket: item.rango,
+    lateRate: item.total > 0 ? Number(((item.tardios / item.total) * 100).toFixed(1)) : 0,
+  }));
 
   // 5. ordersDistribution -> [{ name: string, value: number }]
   const ordersDistribution = (raw.por_tipo_envio || []).map((item: any) => ({
@@ -218,28 +238,14 @@ export async function getAnalytics(): Promise<any> {
   }));
 
   // 6. temporalTrend -> [{ month: string, orders: number, lateRate: number }]
-  const temporalTrend = [
-    { month: "Ene", orders: 380, lateRate: 16.2 },
-    { month: "Feb", orders: 410, lateRate: 15.8 },
-    { month: "Mar", orders: 435, lateRate: 17.1 },
-    { month: "Abr", orders: 450, lateRate: 18.5 },
-    { month: "May", orders: 420, lateRate: 16.9 },
-    { month: "Jun", orders: 460, lateRate: 19.2 },
-    { month: "Jul", orders: 480, lateRate: 20.4 },
-    { month: "Ago", orders: 440, lateRate: 17.0 },
-    { month: "Set", orders: 415, lateRate: 16.5 },
-    { month: "Oct", orders: 430, lateRate: 17.8 },
-    { month: "Nov", orders: 470, lateRate: 18.9 },
-    { month: "Dic", orders: 500, lateRate: 21.0 },
-  ];
+  const temporalTrend = (raw.tendencia_mensual || []).map((item: any) => ({
+    month: item.mes,
+    orders: item.total,
+    lateRate: item.tasa_retraso,
+  }));
 
   // 7. riskDrivers -> [{ variable: string, impact: number }] (para evitar el error de .map)
-  const riskDrivers = [
-    { variable: "Distancia de entrega elevada (> 250 km)", impact: 35 },
-    { variable: "Tiempo de preparación en almacén prolongado (> 8h)", impact: 28 },
-    { variable: "Alta saturación de transportistas (Carga Alta)", impact: 22 },
-    { variable: "Modalidad Mismo Día en rutas interurbanas", impact: 15 },
-  ];
+  const riskDrivers: Array<{ variable: string; impact: number }> = [];
 
   return {
     lateByRegion,
@@ -257,36 +263,29 @@ export async function getModelInfo(): Promise<any> {
   const raw = await request<any>("/model/info");
   const metrics = raw.best_model_metrics || {};
 
-  const totalRecords = raw.total_samples ?? 5000;
-  const onTimeCount = 4125;
-  const delayedCount = 875;
+  const totalRecords = raw.total_samples ?? 0;
+  const targetDistribution = raw.target_distribution || {};
 
   return {
-    name: raw.model_name || "Random Forest",
-    version: raw.model_version || "v2.4.1",
-    trainedAt: raw.trained_at || "2026-08-21 12:00:00",
+    name: raw.model_name || "No disponible",
+    version: raw.model_version || "—",
+    trainedAt: raw.trained_at || "—",
     records: totalRecords, // Usado en data.records.toLocaleString("es-PE")
-    
+
     // Métricas en escala 0 a 1 para que toFixed(3) funcione correctamente
-    accuracy: metrics.accuracy ?? 0.908,
-    precision: metrics.precision ?? 0.722,
-    recall: metrics.recall ?? 0.863,
-    f1: metrics.f1_score ?? 0.786, // Usado en data.f1.toFixed(3)
-    rocAuc: metrics.roc_auc ?? 0.947,
+    accuracy: metrics.accuracy ?? 0,
+    precision: metrics.precision ?? 0,
+    recall: metrics.recall ?? 0,
+    f1: metrics.f1_score ?? 0,
+    rocAuc: metrics.roc_auc ?? 0,
 
     // Feature importance para el BarChart vertical
-    featureImportance: [
-      { feature: "Distancia (km)", importance: 35 },
-      { feature: "Tiempo preparación", importance: 28 },
-      { feature: "Carga logística", importance: 18 },
-      { feature: "Tipo de envío", importance: 12 },
-      { feature: "Peso del paquete", importance: 7 },
-    ],
+    featureImportance: raw.feature_importance || [],
 
     // Distribución de clases para el PieChart
     classDistribution: [
-      { name: "A tiempo (0)", value: onTimeCount },
-      { name: "Tardías (1)", value: delayedCount },
+      { name: "A tiempo (0)", value: targetDistribution.ontime_0 ?? 0 },
+      { name: "Tardías (1)", value: targetDistribution.delayed_1 ?? 0 },
     ],
   };
 }

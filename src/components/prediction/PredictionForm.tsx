@@ -21,7 +21,7 @@ const DEFAULTS: PredictionInput = {
   prepTimeH: 6,
   items: 4,
   weightKg: 8,
-  region: "Arequipa",
+  region: "Sur",
   priority: "Media",
   weekday: "Miércoles",
   logisticLoad: 65,
@@ -36,10 +36,8 @@ export function PredictionForm({
 }) {
   const [form, setForm] = useState<PredictionInput>(DEFAULTS);
 
-  const set = <K extends keyof PredictionInput>(
-    key: K,
-    value: PredictionInput[K],
-  ) => setForm((f) => ({ ...f, [key]: value }));
+  const set = <K extends keyof PredictionInput>(key: K, value: PredictionInput[K]) =>
+    setForm((f) => ({ ...f, [key]: value }));
 
   const num = (key: keyof PredictionInput, label: string, step = 1) => (
     <div className="space-y-1.5">
@@ -47,7 +45,7 @@ export function PredictionForm({
       <Input
         type="number"
         step={step}
-        min={0}
+        min={key === "distanceKm" || key === "estimatedTimeH" || key === "items" ? 1 : 0.1}
         value={form[key] as number}
         onChange={(e) => set(key, Number(e.target.value) as never)}
       />
@@ -91,10 +89,7 @@ export function PredictionForm({
 
         <div className="space-y-1.5">
           <Label className="text-xs">Región</Label>
-          <Select
-            value={form.region}
-            onValueChange={(v) => set("region", v as Region)}
-          >
+          <Select value={form.region} onValueChange={(v) => set("region", v as Region)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -116,10 +111,7 @@ export function PredictionForm({
 
         <div className="space-y-1.5">
           <Label className="text-xs">Prioridad</Label>
-          <Select
-            value={form.priority}
-            onValueChange={(v) => set("priority", v as Priority)}
-          >
+          <Select value={form.priority} onValueChange={(v) => set("priority", v as Priority)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -135,10 +127,7 @@ export function PredictionForm({
 
         <div className="space-y-1.5">
           <Label className="text-xs">Día de la semana</Label>
-          <Select
-            value={form.weekday}
-            onValueChange={(v) => set("weekday", v)}
-          >
+          <Select value={form.weekday} onValueChange={(v) => set("weekday", v)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -155,9 +144,7 @@ export function PredictionForm({
         <div className="space-y-2 sm:col-span-2">
           <div className="flex items-center justify-between">
             <Label className="text-xs">Carga logística</Label>
-            <span className="text-xs font-medium text-primary">
-              {form.logisticLoad}%
-            </span>
+            <span className="text-xs font-medium text-primary">{form.logisticLoad}%</span>
           </div>
           <Slider
             value={[form.logisticLoad]}
@@ -174,11 +161,7 @@ export function PredictionForm({
           <Play className="size-4" />
           {loading ? "Procesando…" : "Realizar predicción"}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setForm(DEFAULTS)}
-        >
+        <Button type="button" variant="outline" onClick={() => setForm(DEFAULTS)}>
           <RotateCcw className="size-4" /> Restablecer
         </Button>
       </div>

@@ -41,8 +41,8 @@ function SettingsPage() {
             <Input defaultValue="/api/predict" />
           </div>
           <p className="text-xs text-muted-foreground">
-            Mientras no exista backend, la plataforma opera con datos mock desde
-            la capa de servicios.
+            Mientras no exista backend, la plataforma opera con datos mock desde la capa de
+            servicios.
           </p>
         </div>
 
@@ -59,18 +59,14 @@ function SettingsPage() {
           <div className="flex items-center justify-between rounded-lg border border-border p-3">
             <div>
               <p className="text-sm font-medium">Alertas de riesgo alto</p>
-              <p className="text-xs text-muted-foreground">
-                Notificar al equipo de operaciones
-              </p>
+              <p className="text-xs text-muted-foreground">Notificar al equipo de operaciones</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between rounded-lg border border-border p-3">
             <div>
               <p className="text-sm font-medium">Reentrenamiento semanal</p>
-              <p className="text-xs text-muted-foreground">
-                Programado los domingos 04:00 UTC
-              </p>
+              <p className="text-xs text-muted-foreground">Programado los domingos 04:00 UTC</p>
             </div>
             <Switch defaultChecked />
           </div>

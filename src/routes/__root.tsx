@@ -86,8 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "TecnoMarket Analytics" },
       {
         property: "og:description",
-        content:
-          "Analiza pedidos históricos y predice el riesgo de retraso en entregas.",
+        content: "Analiza pedidos históricos y predice el riesgo de retraso en entregas.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

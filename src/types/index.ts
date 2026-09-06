@@ -1,12 +1,6 @@
-export type Region =
-  | "Lima"
-  | "Arequipa"
-  | "Trujillo"
-  | "Cusco"
-  | "Piura"
-  | "Chiclayo";
+export type Region = "Centro" | "Norte" | "Sur" | "Este" | "Oeste";
 
-export type ShippingType = "Estándar" | "Express" | "Same Day" | "Programado";
+export type ShippingType = "Estándar" | "Express" | "Mismo Día";
 
 export type DeliveryStatus = "A tiempo" | "Tardía";
 
@@ -56,16 +50,10 @@ export interface PredictionInput {
   logisticLoad: number;
 }
 
-export interface PredictionFactor {
-  feature: string;
-  contribution: number;
-}
-
 export interface PredictionResultData {
   label: "ENTREGA TARDÍA" | "ENTREGA A TIEMPO";
   probability: number;
   risk: RiskLevel;
-  factors: PredictionFactor[];
 }
 
 export interface AnalyticsData {

@@ -50,8 +50,7 @@ export function OrdersTable({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const rows = orders.filter((o) => {
-      if (q && !`${o.id} ${o.region} ${o.shippingType}`.toLowerCase().includes(q))
-        return false;
+      if (q && !`${o.id} ${o.region} ${o.shippingType}`.toLowerCase().includes(q)) return false;
       if (region !== ALL && o.region !== region) return false;
       if (shipping !== ALL && o.shippingType !== shipping) return false;
       if (status !== ALL && o.status !== status) return false;
@@ -212,11 +211,7 @@ export function OrdersTable({
             </TableHeader>
             <TableBody>
               {rows.map((o) => (
-                <TableRow
-                  key={o.id}
-                  onClick={() => onSelect(o)}
-                  className="cursor-pointer"
-                >
+                <TableRow key={o.id} onClick={() => onSelect(o)} className="cursor-pointer">
                   <TableCell className="font-mono text-xs">{o.id}</TableCell>
                   <TableCell className="text-xs">{o.date}</TableCell>
                   <TableCell className="text-xs">{o.region}</TableCell>

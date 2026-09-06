@@ -16,13 +16,8 @@ import {
   YAxis,
 } from "recharts";
 import { AppLayout } from "@/layouts/AppLayout";
-import { LoadingState } from "@/components/common/States";
-import {
-  CHART_COLORS,
-  ChartCard,
-  axisProps,
-  tooltipStyle,
-} from "@/components/charts/ChartCard";
+import { ErrorState, LoadingState } from "@/components/common/States";
+import { CHART_COLORS, ChartCard, axisProps, tooltipStyle } from "@/components/charts/ChartCard";
 import { getAnalytics } from "@/services/api";
 
 export const Route = createFileRoute("/analytics")({
@@ -45,17 +40,16 @@ export const Route = createFileRoute("/analytics")({
 });
 
 function AnalyticsPage() {
-  const { data, isLoading } = useQuery({
+  const { data, isError, error, isLoading } = useQuery({
     queryKey: ["analytics"],
     queryFn: getAnalytics,
   });
 
   return (
-    <AppLayout
-      title="Analítica"
-      subtitle="Patrones de retraso y variables asociadas al riesgo"
-    >
-      {isLoading || !data ? (
+    <AppLayout title="Analítica" subtitle="Patrones de retraso y variables asociadas al riesgo">
+      {isError ? (
+        <ErrorState message={error.message} />
+      ) : isLoading || !data ? (
         <LoadingState />
       ) : (
         <>
@@ -77,10 +71,7 @@ function AnalyticsPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard
-              title="Retrasos por tipo de envío"
-              description="Tasa de retraso (%)"
-            >
+            <ChartCard title="Retrasos por tipo de envío" description="Tasa de retraso (%)">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.lateByShipping} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -97,10 +88,7 @@ function AnalyticsPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard
-              title="Retrasos según distancia"
-              description="Rangos de distancia recorrida"
-            >
+            <ChartCard title="Retrasos según distancia" description="Rangos de distancia recorrida">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.lateByDistance}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -193,30 +181,30 @@ function AnalyticsPage() {
             </ChartCard>
           </div>
 
-          <div className="panel p-5">
-            <h3 className="text-sm font-semibold">
-              Variables asociadas a mayor riesgo
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Contribución relativa al riesgo de retraso según el modelo
-            </p>
-            <div className="mt-4 space-y-3">
-              {data.riskDrivers.map((d) => (
-                <div key={d.variable}>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">{d.variable}</span>
-                    <span className="font-medium">{d.impact}%</span>
+          {data.riskDrivers.length > 0 && (
+            <div className="panel p-5">
+              <h3 className="text-sm font-semibold">Variables asociadas a mayor riesgo</h3>
+              <p className="text-xs text-muted-foreground">
+                Contribución relativa al riesgo de retraso según el modelo
+              </p>
+              <div className="mt-4 space-y-3">
+                {data.riskDrivers.map((d) => (
+                  <div key={d.variable}>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">{d.variable}</span>
+                      <span className="font-medium">{d.impact}%</span>
+                    </div>
+                    <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${d.impact * 3}%`, maxWidth: "100%" }}
+                      />
+                    </div>
                   </div>
-                  <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary"
-                      style={{ width: `${d.impact * 3}%`, maxWidth: "100%" }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
     </AppLayout>

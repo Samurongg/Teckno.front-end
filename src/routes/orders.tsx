@@ -35,7 +35,7 @@ function OrdersPage() {
     queryKey: ["orders"],
     queryFn: getOrders,
   });
-  
+
   const [selected, setSelected] = useState<Order | null>(null);
 
   // ✅ Añadimos manejo de error por si FastAPI está apagado
@@ -56,7 +56,8 @@ function OrdersPage() {
     >
       <div className="panel flex items-center gap-3 p-4 text-xs text-muted-foreground">
         <Database className="size-4 text-primary" />
-        Datos sincronizados desde la base de datos SQLite de TecnoMarket. Esta vista no crea ni modifica pedidos.
+        Datos sincronizados desde la base de datos SQLite de TecnoMarket. Esta vista no crea ni
+        modifica pedidos.
       </div>
 
       {isLoading || !data ? (
@@ -65,10 +66,7 @@ function OrdersPage() {
         <OrdersTable orders={data} onSelect={setSelected} />
       )}
 
-      <OrderDetails
-        order={selected}
-        onOpenChange={(open) => !open && setSelected(null)}
-      />
+      <OrderDetails order={selected} onOpenChange={(open) => !open && setSelected(null)} />
     </AppLayout>
   );
 }

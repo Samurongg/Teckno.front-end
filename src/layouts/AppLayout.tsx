@@ -1,6 +1,7 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { getSession } from "@/lib/auth";
 
 interface AppLayoutProps {
   title: string;
@@ -9,6 +10,20 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ title, subtitle, children }: AppLayoutProps) {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (!getSession()) {
+      window.location.replace("/login");
+      return;
+    }
+    setIsAuthenticated(true);
+  }, []);
+
+  if (!isAuthenticated) {
+    return <div className="min-h-screen bg-background" aria-busy="true" />;
+  }
+
   return (
     <div className="flex min-h-screen bg-background">
       <div className="hidden lg:block">

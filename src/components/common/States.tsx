@@ -1,4 +1,4 @@
-import { Inbox, Loader2 } from "lucide-react";
+import { CircleAlert, Inbox, Loader2 } from "lucide-react";
 
 export function LoadingState({ label = "Cargando datos…" }: { label?: string }) {
   return (
@@ -23,6 +23,18 @@ export function EmptyState({
       </div>
       <p className="text-sm font-medium">{title}</p>
       <p className="max-w-xs text-xs text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+
+export function ErrorState({ message }: { message: string }) {
+  return (
+    <div className="flex min-h-[220px] flex-col items-center justify-center gap-2 text-center">
+      <div className="rounded-full bg-destructive/10 p-3 text-destructive">
+        <CircleAlert className="size-5" />
+      </div>
+      <p className="text-sm font-medium">No se pudieron cargar los datos</p>
+      <p className="max-w-md text-xs text-muted-foreground">{message}</p>
     </div>
   );
 }

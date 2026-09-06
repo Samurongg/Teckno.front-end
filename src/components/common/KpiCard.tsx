@@ -18,14 +18,7 @@ const tones = {
   danger: "text-destructive bg-destructive/10",
 };
 
-export function KpiCard({
-  label,
-  value,
-  icon: Icon,
-  delta,
-  hint,
-  tone = "default",
-}: KpiCardProps) {
+export function KpiCard({ label, value, icon: Icon, delta, hint, tone = "default" }: KpiCardProps) {
   const positive = (delta ?? 0) >= 0;
   return (
     <div className="panel p-5">
@@ -46,11 +39,7 @@ export function KpiCard({
               positive ? "text-success" : "text-destructive",
             )}
           >
-            {positive ? (
-              <TrendingUp className="size-3.5" />
-            ) : (
-              <TrendingDown className="size-3.5" />
-            )}
+            {positive ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}
             {positive ? "+" : ""}
             {delta}%
           </span>
