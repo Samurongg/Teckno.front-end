@@ -22,7 +22,7 @@ export const Route = createFileRoute("/profile")({
 const activity = [
   { label: "Predicción ejecutada", detail: "Pedido simulado · riesgo ALTO", time: "Hace 12 min" },
   { label: "Filtro guardado", detail: "Cusco · Envío estándar", time: "Hace 2 h" },
-  { label: "Reporte exportado", detail: "Retrasos por región · Julio", time: "Ayer" },
+  { label: "Reporte exportado", detail: "Retrasos por departamento · Julio", time: "Ayer" },
 ];
 
 function ProfilePage() {

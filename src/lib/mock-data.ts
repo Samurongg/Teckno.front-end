@@ -1,15 +1,15 @@
 import type {
   AnalyticsData,
   DashboardSummary,
+  Department,
   ModelInfo,
   Order,
   Priority,
-  Region,
   RiskLevel,
   ShippingType,
 } from "@/types";
+import { DEPARTMENTS, DEPARTMENT_LOGISTICS } from "@/lib/peru-logistics";
 
-const regions: Region[] = ["Centro", "Norte", "Sur", "Este", "Oeste"];
 const shippings: ShippingType[] = ["Estándar", "Express", "Mismo Día"];
 const priorities: Priority[] = ["Baja", "Media", "Alta"];
 
@@ -32,9 +32,14 @@ export const MOCK_ORDERS: Order[] = (() => {
   const rand = rng(20260818);
   const orders: Order[] = [];
   for (let i = 0; i < 320; i++) {
-    const region = regions[Math.floor(rand() * regions.length)]!;
+    const department = DEPARTMENTS[Math.floor(rand() * DEPARTMENTS.length)]! as Department;
+    const logistics = DEPARTMENT_LOGISTICS[department];
     const shippingType = shippings[Math.floor(rand() * shippings.length)]!;
-    const distanceKm = Math.round(8 + rand() * 940);
+    const distanceKm = Math.round(
+      logistics.minDistanceKm + rand() * (logistics.maxDistanceKm - logistics.minDistanceKm),
+    );
+    const transportMode =
+      logistics.transportModes[Math.floor(rand() * logistics.transportModes.length)]!;
     const prepTimeH = Math.round((0.5 + rand() * 11) * 10) / 10;
     const items = 1 + Math.floor(rand() * 14);
     const weightKg = Math.round((0.3 + rand() * 24) * 10) / 10;
@@ -58,7 +63,9 @@ export const MOCK_ORDERS: Order[] = (() => {
     orders.push({
       id: `TM-${(10234 + i).toString()}`,
       date: day.toISOString().slice(0, 10),
-      region,
+      department,
+      logisticZone: logistics.zone,
+      transportMode,
       shippingType,
       distanceKm,
       prepTimeH,
@@ -91,13 +98,17 @@ export const MOCK_DASHBOARD: DashboardSummary = {
     { month: "Jul", late: 79, onTime: 448 },
     { month: "Ago", late: 71, onTime: 462 },
   ],
-  byRegion: [
-    { region: "Lima", orders: 1840, late: 236 },
-    { region: "Arequipa", orders: 890, late: 178 },
-    { region: "Trujillo", orders: 720, late: 141 },
-    { region: "Cusco", orders: 610, late: 152 },
-    { region: "Piura", orders: 520, late: 96 },
-    { region: "Chiclayo", orders: 420, late: 72 },
+  byDepartment: [
+    { department: "Lima", orders: 1840, late: 236 },
+    { department: "Arequipa", orders: 890, late: 178 },
+    { department: "La Libertad", orders: 720, late: 141 },
+    { department: "Cusco", orders: 610, late: 152 },
+    { department: "Piura", orders: 520, late: 96 },
+  ],
+  byZone: [
+    { zone: "Lima y Callao", orders: 1900, late: 260 },
+    { zone: "Costa Norte", orders: 1100, late: 210 },
+    { zone: "Sierra Sur", orders: 850, late: 205 },
   ],
   byShipping: [
     { type: "Estándar", lateRate: 24.1 },
@@ -112,13 +123,18 @@ export const MOCK_DASHBOARD: DashboardSummary = {
 };
 
 export const MOCK_ANALYTICS: AnalyticsData = {
-  lateByRegion: [
-    { region: "Cusco", lateRate: 24.9 },
-    { region: "Arequipa", lateRate: 20.0 },
-    { region: "Trujillo", lateRate: 19.6 },
-    { region: "Piura", lateRate: 18.5 },
-    { region: "Chiclayo", lateRate: 17.1 },
-    { region: "Lima", lateRate: 12.8 },
+  lateByDepartment: [
+    { department: "Loreto", lateRate: 31.9 },
+    { department: "Cusco", lateRate: 24.9 },
+    { department: "Arequipa", lateRate: 20.0 },
+    { department: "Piura", lateRate: 18.5 },
+    { department: "Lima", lateRate: 12.8 },
+  ],
+  lateByZone: [
+    { zone: "Selva Norte", lateRate: 31.2 },
+    { zone: "Sierra Sur", lateRate: 24.1 },
+    { zone: "Costa Norte", lateRate: 18.7 },
+    { zone: "Lima y Callao", lateRate: 9.2 },
   ],
   lateByShipping: [
     { type: "Estándar", lateRate: 24.1 },
@@ -190,7 +206,6 @@ export const MOCK_MODEL: ModelInfo = {
   ],
 };
 
-export const REGIONS = regions;
 export const SHIPPING_TYPES = shippings;
 export const PRIORITIES = priorities;
 export const WEEKDAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];

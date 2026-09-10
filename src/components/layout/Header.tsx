@@ -47,7 +47,7 @@ export function Header({ title, subtitle, showSearch = true }: HeaderProps) {
       {showSearch ? (
         <div className="relative hidden md:block md:w-64">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Buscar pedido, región…" className="pl-9" />
+          <Input placeholder="Buscar pedido, departamento…" className="pl-9" />
         </div>
       ) : null}
 

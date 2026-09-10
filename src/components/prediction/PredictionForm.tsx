@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Play, RotateCcw } from "lucide-react";
-import type { PredictionInput, Priority, Region, ShippingType } from "@/types";
-import { PRIORITIES, REGIONS, SHIPPING_TYPES, WEEKDAYS } from "@/lib/mock-data";
+import type { Department, PredictionInput, Priority, ShippingType, TransportMode } from "@/types";
+import { PRIORITIES, SHIPPING_TYPES, WEEKDAYS } from "@/lib/mock-data";
+import { DEPARTMENTS, DEPARTMENT_LOGISTICS, referenceDistance } from "@/lib/peru-logistics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,14 +15,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+function estimatedHours(distanceKm: number, shippingType: ShippingType): number {
+  if (shippingType === "Mismo Día") return 24;
+  if (shippingType === "Express") return Math.min(144, (Math.ceil(distanceKm / 550) + 1) * 24);
+  return Math.min(240, (Math.ceil(distanceKm / 320) + 2) * 24);
+}
+
+const DEFAULT_DEPARTMENT: Department = "Arequipa";
+const DEFAULT_DISTANCE = referenceDistance(DEFAULT_DEPARTMENT);
 const DEFAULTS: PredictionInput = {
   shippingType: "Estándar",
-  distanceKm: 420,
-  estimatedTimeH: 48,
+  distanceKm: DEFAULT_DISTANCE,
+  estimatedTimeH: estimatedHours(DEFAULT_DISTANCE, "Estándar"),
   prepTimeH: 6,
   items: 4,
   weightKg: 8,
-  region: "Sur",
+  department: DEFAULT_DEPARTMENT,
+  transportMode: "Terrestre",
   priority: "Media",
   weekday: "Miércoles",
   logisticLoad: 65,
@@ -35,9 +45,36 @@ export function PredictionForm({
   loading: boolean;
 }) {
   const [form, setForm] = useState<PredictionInput>(DEFAULTS);
+  const logistics = DEPARTMENT_LOGISTICS[form.department];
 
   const set = <K extends keyof PredictionInput>(key: K, value: PredictionInput[K]) =>
-    setForm((f) => ({ ...f, [key]: value }));
+    setForm((current) => ({ ...current, [key]: value }));
+
+  const changeDepartment = (department: Department) => {
+    const config = DEPARTMENT_LOGISTICS[department];
+    const distanceKm = referenceDistance(department);
+    const shippingType =
+      config.maxDistanceKm <= 180
+        ? form.shippingType
+        : form.shippingType === "Mismo Día"
+          ? "Estándar"
+          : form.shippingType;
+    setForm((current) => ({
+      ...current,
+      department,
+      distanceKm,
+      shippingType,
+      estimatedTimeH: estimatedHours(distanceKm, shippingType),
+      transportMode: config.transportModes[0],
+    }));
+  };
+
+  const changeShipping = (shippingType: ShippingType) =>
+    setForm((current) => ({
+      ...current,
+      shippingType,
+      estimatedTimeH: estimatedHours(current.distanceKm, shippingType),
+    }));
 
   const num = (key: keyof PredictionInput, label: string, step = 1) => (
     <div className="space-y-1.5">
@@ -45,42 +82,46 @@ export function PredictionForm({
       <Input
         type="number"
         step={step}
-        min={key === "distanceKm" || key === "estimatedTimeH" || key === "items" ? 1 : 0.1}
+        min={key === "estimatedTimeH" || key === "items" ? 1 : 0.1}
         value={form[key] as number}
-        onChange={(e) => set(key, Number(e.target.value) as never)}
+        onChange={(event) => set(key, Number(event.target.value) as never)}
       />
     </div>
+  );
+
+  const shippingOptions = SHIPPING_TYPES.filter(
+    (shipping) => shipping !== "Mismo Día" || logistics.maxDistanceKm <= 180,
   );
 
   return (
     <form
       className="panel space-y-5 p-5"
-      onSubmit={(e) => {
-        e.preventDefault();
+      onSubmit={(event) => {
+        event.preventDefault();
         onSubmit(form);
       }}
     >
       <div>
         <h2 className="text-sm font-semibold">Características del pedido</h2>
         <p className="text-xs text-muted-foreground">
-          Los valores se envían al modelo mediante POST /api/predict.
+          Centro operativo: Lima. La zona y la distancia se derivan del destino nacional.
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label className="text-xs">Tipo de envío</Label>
+          <Label className="text-xs">Departamento de destino</Label>
           <Select
-            value={form.shippingType}
-            onValueChange={(v) => set("shippingType", v as ShippingType)}
+            value={form.department}
+            onValueChange={(value) => changeDepartment(value as Department)}
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {SHIPPING_TYPES.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
+              {DEPARTMENTS.map((department) => (
+                <SelectItem key={department} value={department}>
+                  {department}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -88,22 +129,64 @@ export function PredictionForm({
         </div>
 
         <div className="space-y-1.5">
-          <Label className="text-xs">Región</Label>
-          <Select value={form.region} onValueChange={(v) => set("region", v as Region)}>
+          <Label className="text-xs">Zona logística</Label>
+          <Input value={logistics.zone} readOnly aria-readonly="true" />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">Modo de transporte</Label>
+          <Select
+            value={form.transportMode}
+            onValueChange={(value) => set("transportMode", value as TransportMode)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {REGIONS.map((r) => (
-                <SelectItem key={r} value={r}>
-                  {r}
+              {logistics.transportModes.map((mode) => (
+                <SelectItem key={mode} value={mode}>
+                  {mode}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {num("distanceKm", "Distancia (km)")}
+        <div className="space-y-1.5">
+          <Label className="text-xs">Tipo de envío</Label>
+          <Select
+            value={form.shippingType}
+            onValueChange={(value) => changeShipping(value as ShippingType)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {shippingOptions.map((shipping) => (
+                <SelectItem key={shipping} value={shipping}>
+                  {shipping}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">Distancia logística desde Lima (km)</Label>
+          <Input
+            type="number"
+            min={logistics.minDistanceKm}
+            max={logistics.maxDistanceKm}
+            step={1}
+            value={form.distanceKm}
+            onChange={(event) => set("distanceKm", Number(event.target.value))}
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Referencia para {form.department}: {logistics.minDistanceKm}–{logistics.maxDistanceKm}{" "}
+            km.
+          </p>
+        </div>
+
         {num("estimatedTimeH", "Tiempo estimado (h)")}
         {num("prepTimeH", "Tiempo de preparación (h)", 0.5)}
         {num("items", "Cantidad de productos")}
@@ -111,14 +194,17 @@ export function PredictionForm({
 
         <div className="space-y-1.5">
           <Label className="text-xs">Prioridad</Label>
-          <Select value={form.priority} onValueChange={(v) => set("priority", v as Priority)}>
+          <Select
+            value={form.priority}
+            onValueChange={(value) => set("priority", value as Priority)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {PRIORITIES.map((p) => (
-                <SelectItem key={p} value={p}>
-                  {p}
+              {PRIORITIES.map((priority) => (
+                <SelectItem key={priority} value={priority}>
+                  {priority}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -127,14 +213,14 @@ export function PredictionForm({
 
         <div className="space-y-1.5">
           <Label className="text-xs">Día de la semana</Label>
-          <Select value={form.weekday} onValueChange={(v) => set("weekday", v)}>
+          <Select value={form.weekday} onValueChange={(value) => set("weekday", value)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {WEEKDAYS.map((d) => (
-                <SelectItem key={d} value={d}>
-                  {d}
+              {WEEKDAYS.map((day) => (
+                <SelectItem key={day} value={day}>
+                  {day}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -151,7 +237,7 @@ export function PredictionForm({
             min={0}
             max={100}
             step={1}
-            onValueChange={([v]) => set("logisticLoad", v ?? 0)}
+            onValueChange={([value]) => set("logisticLoad", value ?? 0)}
           />
         </div>
       </div>

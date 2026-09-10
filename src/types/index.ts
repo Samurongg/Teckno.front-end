@@ -1,4 +1,41 @@
-export type Region = "Centro" | "Norte" | "Sur" | "Este" | "Oeste";
+export type Department =
+  | "Amazonas"
+  | "Áncash"
+  | "Apurímac"
+  | "Arequipa"
+  | "Ayacucho"
+  | "Cajamarca"
+  | "Callao"
+  | "Cusco"
+  | "Huancavelica"
+  | "Huánuco"
+  | "Ica"
+  | "Junín"
+  | "La Libertad"
+  | "Lambayeque"
+  | "Lima"
+  | "Loreto"
+  | "Madre de Dios"
+  | "Moquegua"
+  | "Pasco"
+  | "Piura"
+  | "Puno"
+  | "San Martín"
+  | "Tacna"
+  | "Tumbes"
+  | "Ucayali";
+
+export type LogisticZone =
+  | "Costa Norte"
+  | "Costa Sur"
+  | "Lima y Callao"
+  | "Selva Centro-Sur"
+  | "Selva Norte"
+  | "Sierra Centro"
+  | "Sierra Norte"
+  | "Sierra Sur";
+
+export type TransportMode = "Terrestre" | "Aéreo" | "Multimodal";
 
 export type ShippingType = "Estándar" | "Express" | "Mismo Día";
 
@@ -11,7 +48,9 @@ export type Priority = "Baja" | "Media" | "Alta";
 export interface Order {
   id: string;
   date: string;
-  region: Region;
+  department: Department;
+  logisticZone: LogisticZone;
+  transportMode: TransportMode;
   shippingType: ShippingType;
   distanceKm: number;
   prepTimeH: number;
@@ -32,7 +71,8 @@ export interface DashboardSummary {
   predictions: number;
   globalRisk: RiskLevel;
   lateTrend: { month: string; late: number; onTime: number }[];
-  byRegion: { region: string; orders: number; late: number }[];
+  byDepartment: { department: string; orders: number; late: number }[];
+  byZone: { zone: string; orders: number; late: number }[];
   byShipping: { type: string; lateRate: number }[];
   distribution: { name: string; value: number }[];
 }
@@ -44,7 +84,8 @@ export interface PredictionInput {
   prepTimeH: number;
   items: number;
   weightKg: number;
-  region: Region;
+  department: Department;
+  transportMode: TransportMode;
   priority: Priority;
   weekday: string;
   logisticLoad: number;
@@ -57,7 +98,8 @@ export interface PredictionResultData {
 }
 
 export interface AnalyticsData {
-  lateByRegion: { region: string; lateRate: number }[];
+  lateByDepartment: { department: string; lateRate: number }[];
+  lateByZone: { zone: string; lateRate: number }[];
   lateByShipping: { type: string; lateRate: number }[];
   lateByDistance: { bucket: string; lateRate: number }[];
   lateByPrepTime: { bucket: string; lateRate: number }[];

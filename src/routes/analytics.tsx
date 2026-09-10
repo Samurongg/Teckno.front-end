@@ -26,8 +26,7 @@ export const Route = createFileRoute("/analytics")({
       { title: "Analítica logística — TecnoMarket Analytics" },
       {
         name: "description",
-        content:
-          "Análisis de retrasos por región, tipo de envío, distancia y tiempo de preparación.",
+        content: "Análisis de retrasos por departamento, zona logística, envío y distancia.",
       },
       { property: "og:title", content: "Analítica — TecnoMarket Analytics" },
       {
@@ -44,6 +43,9 @@ function AnalyticsPage() {
     queryKey: ["analytics"],
     queryFn: getAnalytics,
   });
+  const topDepartments = data
+    ? [...data.lateByDepartment].sort((a, b) => b.lateRate - a.lateRate).slice(0, 10)
+    : [];
 
   return (
     <AppLayout title="Analítica" subtitle="Patrones de retraso y variables asociadas al riesgo">
@@ -54,18 +56,41 @@ function AnalyticsPage() {
       ) : (
         <>
           <div className="grid gap-4 xl:grid-cols-2">
-            <ChartCard title="Retrasos por región" description="Tasa de retraso (%)">
+            <ChartCard
+              title="Departamentos con mayor retraso"
+              description="Diez tasas más altas (%)"
+            >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.lateByRegion}>
+                <BarChart data={topDepartments} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="region" {...axisProps} />
-                  <YAxis {...axisProps} />
+                  <XAxis type="number" {...axisProps} />
+                  <YAxis type="category" dataKey="department" width={105} {...axisProps} />
                   <Tooltip {...tooltipStyle} />
                   <Bar
                     dataKey="lateRate"
                     name="% tardías"
                     fill="var(--chart-1)"
                     radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </ChartCard>
+
+            <ChartCard
+              title="Retrasos por zona logística"
+              description="Tasa de retraso nacional (%)"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data.lateByZone} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis type="number" {...axisProps} />
+                  <YAxis type="category" dataKey="zone" width={115} {...axisProps} />
+                  <Tooltip {...tooltipStyle} />
+                  <Bar
+                    dataKey="lateRate"
+                    name="% tardías"
+                    fill="var(--chart-2)"
+                    radius={[0, 4, 4, 0]}
                   />
                 </BarChart>
               </ResponsiveContainer>

@@ -35,37 +35,6 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-// -------------------------------------------------------------
-// NORMALIZADORES AUXILIARES PARA PREDICT
-// -------------------------------------------------------------
-function normalizarRegion(region: string): "Centro" | "Norte" | "Sur" | "Este" | "Oeste" {
-  const r = (region || "").toLowerCase();
-  if (
-    r.includes("arequipa") ||
-    r.includes("sur") ||
-    r.includes("cusco") ||
-    r.includes("tacna") ||
-    r.includes("puno")
-  )
-    return "Sur";
-  if (
-    r.includes("trujillo") ||
-    r.includes("piura") ||
-    r.includes("norte") ||
-    r.includes("chiclayo")
-  )
-    return "Norte";
-  if (
-    r.includes("este") ||
-    r.includes("iquitos") ||
-    r.includes("tarapoto") ||
-    r.includes("ucayali")
-  )
-    return "Este";
-  if (r.includes("oeste")) return "Oeste";
-  return "Centro";
-}
-
 function normalizarTipoEnvio(tipo: string): "Estándar" | "Express" | "Mismo Día" {
   const t = (tipo || "").toLowerCase();
   if (t.includes("same") || t.includes("mismo") || t.includes("dia")) return "Mismo Día";
@@ -122,8 +91,15 @@ export async function getDashboard(): Promise<any> {
     total: item.total,
   }));
 
-  const byRegion = (raw.pedidos_por_region || []).map((item: any) => ({
-    region: item.region,
+  const byDepartment = (raw.pedidos_por_departamento || []).map((item: any) => ({
+    department: item.departamento,
+    orders: item.total,
+    late: item.tardios,
+    lateRate: item.tasa_retraso,
+  }));
+
+  const byZone = (raw.pedidos_por_zona || []).map((item: any) => ({
+    zone: item.zona,
     orders: item.total,
     late: item.tardios,
     lateRate: item.tasa_retraso,
@@ -147,7 +123,8 @@ export async function getDashboard(): Promise<any> {
     predictions,
     globalRisk,
     lateTrend,
-    byRegion,
+    byDepartment,
+    byZone,
     byShipping,
     distribution,
   };
@@ -156,21 +133,27 @@ export async function getDashboard(): Promise<any> {
 /** GET /api/orders */
 export async function getOrders(): Promise<any[]> {
   const response = await request<{ data: any[] }>("/orders?page_size=5000");
-  return (response.data || []).map((o) => ({
-    ...o,
-    id: o.order_id,
-    orderId: o.order_id,
-    date: o.fecha_pedido,
-    shippingType: o.tipo_envio,
-    distanceKm: o.distancia_km,
-    prepTimeH: o.tiempo_preparacion_horas,
-    itemCount: o.cantidad_productos,
-    weightKg: o.peso_kg,
-    logisticLoad: o.carga_logistica,
-    dayOfWeek: o.dia_semana,
-    isDelayed: o.entrega_tardia === 1,
-    status: o.entrega_tardia === 1 ? "Tardío" : "A tiempo",
-  }));
+  return (response.data || []).map((o) => {
+    const isDelayed = o.entrega_tardia === 1;
+    const load = normalizarCargaLogistica(o.carga_logistica);
+    return {
+      id: o.order_id,
+      date: o.fecha_pedido,
+      department: o.departamento_destino,
+      logisticZone: o.zona_logistica,
+      transportMode: o.modo_transporte,
+      shippingType: o.tipo_envio,
+      distanceKm: o.distancia_km,
+      prepTimeH: o.tiempo_preparacion_horas,
+      items: o.cantidad_productos,
+      weightKg: o.peso_kg,
+      logisticLoad: load === "Alta" ? 85 : load === "Media" ? 55 : 25,
+      priority: o.prioridad,
+      status: isDelayed ? "Tardía" : "A tiempo",
+      risk: isDelayed ? "ALTO" : "BAJO",
+      riskScore: isDelayed ? 75 : 20,
+    };
+  });
 }
 
 /** POST /api/predict */
@@ -179,7 +162,8 @@ export async function predictDelivery(input: any): Promise<PredictionResultData>
   const diasEstimados = Math.max(1, Math.round(horasEstimadas / 24));
 
   const payload = {
-    region: normalizarRegion(input.region),
+    departamento_destino: input.department,
+    modo_transporte: input.transportMode,
     tipo_envio: normalizarTipoEnvio(input.shippingType || input.tipo_envio),
     distancia_km: Number(input.distanceKm ?? input.distancia_km ?? 100),
     tiempo_estimado_dias: diasEstimados,
@@ -207,9 +191,13 @@ export async function predictDelivery(input: any): Promise<PredictionResultData>
 export async function getAnalytics(): Promise<any> {
   const raw = await request<any>("/analytics");
 
-  // 1. lateByRegion -> [{ region: string, lateRate: number }]
-  const lateByRegion = (raw.por_region || []).map((item: any) => ({
-    region: item.categoria,
+  const lateByDepartment = (raw.por_departamento || []).map((item: any) => ({
+    department: item.categoria,
+    lateRate: item.tasa_retraso,
+  }));
+
+  const lateByZone = (raw.por_zona_logistica || []).map((item: any) => ({
+    zone: item.categoria,
     lateRate: item.tasa_retraso,
   }));
 
@@ -248,7 +236,8 @@ export async function getAnalytics(): Promise<any> {
   const riskDrivers: Array<{ variable: string; impact: number }> = [];
 
   return {
-    lateByRegion,
+    lateByDepartment,
+    lateByZone,
     lateByShipping,
     lateByDistance,
     lateByPrepTime,

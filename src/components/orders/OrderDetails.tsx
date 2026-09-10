@@ -42,7 +42,9 @@ export function OrderDetails({
             </DialogHeader>
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <Row label="Región" value={order.region} />
+              <Row label="Departamento" value={order.department} />
+              <Row label="Zona logística" value={order.logisticZone} />
+              <Row label="Transporte" value={order.transportMode} />
               <Row label="Tipo de envío" value={order.shippingType} />
               <Row label="Prioridad" value={order.priority} />
               <Row label="Distancia" value={`${order.distanceKm} km`} />

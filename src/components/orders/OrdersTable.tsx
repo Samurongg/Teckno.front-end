@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { ArrowUpDown, Search, X } from "lucide-react";
 import type { Order } from "@/types";
-import { REGIONS, SHIPPING_TYPES } from "@/lib/mock-data";
+import { SHIPPING_TYPES } from "@/lib/mock-data";
+import { DEPARTMENTS } from "@/lib/peru-logistics";
 import { RiskBadge, StatusBadge } from "@/components/common/RiskBadge";
 import { EmptyState } from "@/components/common/States";
 import { Input } from "@/components/ui/input";
@@ -38,7 +39,7 @@ export function OrdersTable({
   onSelect: (order: Order) => void;
 }) {
   const [query, setQuery] = useState("");
-  const [region, setRegion] = useState<string>(ALL);
+  const [department, setDepartment] = useState<string>(ALL);
   const [shipping, setShipping] = useState<string>(ALL);
   const [status, setStatus] = useState<string>(ALL);
   const [from, setFrom] = useState("");
@@ -50,8 +51,14 @@ export function OrdersTable({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const rows = orders.filter((o) => {
-      if (q && !`${o.id} ${o.region} ${o.shippingType}`.toLowerCase().includes(q)) return false;
-      if (region !== ALL && o.region !== region) return false;
+      if (
+        q &&
+        !`${o.id} ${o.department} ${o.logisticZone} ${o.transportMode} ${o.shippingType}`
+          .toLowerCase()
+          .includes(q)
+      )
+        return false;
+      if (department !== ALL && o.department !== department) return false;
       if (shipping !== ALL && o.shippingType !== shipping) return false;
       if (status !== ALL && o.status !== status) return false;
       if (from && o.date < from) return false;
@@ -64,7 +71,7 @@ export function OrdersTable({
       if (av === bv) return 0;
       return (av < bv ? -1 : 1) * (sortAsc ? 1 : -1);
     });
-  }, [orders, query, region, shipping, status, from, to, sortKey, sortAsc]);
+  }, [orders, query, department, shipping, status, from, to, sortKey, sortAsc]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const current = Math.min(page, pages);
@@ -81,7 +88,7 @@ export function OrdersTable({
 
   const reset = () => {
     setQuery("");
-    setRegion(ALL);
+    setDepartment(ALL);
     setShipping(ALL);
     setStatus(ALL);
     setFrom("");
@@ -113,25 +120,25 @@ export function OrdersTable({
               setQuery(e.target.value);
               setPage(1);
             }}
-            placeholder="Buscar por ID, región o envío"
+            placeholder="Buscar por ID, departamento, zona o envío"
             className="pl-9"
           />
         </div>
         <Select
-          value={region}
+          value={department}
           onValueChange={(v) => {
-            setRegion(v);
+            setDepartment(v);
             setPage(1);
           }}
         >
           <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Región" />
+            <SelectValue placeholder="Departamento" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL}>Todas las regiones</SelectItem>
-            {REGIONS.map((r) => (
-              <SelectItem key={r} value={r}>
-                {r}
+            <SelectItem value={ALL}>Todos los departamentos</SelectItem>
+            {DEPARTMENTS.map((departmentOption) => (
+              <SelectItem key={departmentOption} value={departmentOption}>
+                {departmentOption}
               </SelectItem>
             ))}
           </SelectContent>
@@ -199,7 +206,8 @@ export function OrdersTable({
               <TableRow>
                 <TableHead className="text-xs">ID</TableHead>
                 <SortHead label="Fecha" k="date" />
-                <TableHead className="text-xs">Región</TableHead>
+                <TableHead className="text-xs">Departamento</TableHead>
+                <TableHead className="text-xs">Zona</TableHead>
                 <TableHead className="text-xs">Envío</TableHead>
                 <SortHead label="Distancia" k="distanceKm" />
                 <SortHead label="Preparación" k="prepTimeH" />
@@ -214,7 +222,8 @@ export function OrdersTable({
                 <TableRow key={o.id} onClick={() => onSelect(o)} className="cursor-pointer">
                   <TableCell className="font-mono text-xs">{o.id}</TableCell>
                   <TableCell className="text-xs">{o.date}</TableCell>
-                  <TableCell className="text-xs">{o.region}</TableCell>
+                  <TableCell className="text-xs">{o.department}</TableCell>
+                  <TableCell className="text-xs">{o.logisticZone}</TableCell>
                   <TableCell className="text-xs">{o.shippingType}</TableCell>
                   <TableCell className="text-xs">{o.distanceKm} km</TableCell>
                   <TableCell className="text-xs">{o.prepTimeH} h</TableCell>

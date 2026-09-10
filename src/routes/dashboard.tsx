@@ -103,9 +103,7 @@ function DashboardPage() {
                 <div className="mt-3">
                   <RiskBadge level={data.globalRisk} className="text-sm" />
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Score compuesto del modelo v2.4.1
-                </p>
+                <p className="mt-2 text-xs text-muted-foreground">Evaluación del modelo activo</p>
               </div>
               <span className="rounded-lg bg-warning/10 p-2 text-warning">
                 <ShieldAlert className="size-4" />
@@ -139,12 +137,15 @@ function DashboardPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Pedidos por región" description="Volumen total y pedidos tardíos">
+            <ChartCard
+              title="Pedidos por zona logística"
+              description="Cobertura nacional desde Lima"
+            >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.byRegion}>
+                <BarChart data={data.byZone} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                  <XAxis dataKey="region" {...axisProps} />
-                  <YAxis {...axisProps} />
+                  <XAxis type="number" {...axisProps} />
+                  <YAxis type="category" dataKey="zone" width={115} {...axisProps} />
                   <Tooltip {...tooltipStyle} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   <Bar
