@@ -12,7 +12,7 @@ La aplicación no es un e-commerce y no crea pedidos, pagos ni inventario. Consu
 - Consultar el dashboard de rendimiento logístico.
 - Explorar pedidos históricos y ver su información.
 - Simular un pedido para calcular su riesgo de retraso.
-- Comparar retrasos por región, envío, distancia y tiempo de preparación.
+- Comparar retrasos por departamento, zona logística, envío, distancia y preparación.
 - Revisar las métricas, clases e importancia de variables del modelo ML.
 
 ## Tecnologías
@@ -65,11 +65,11 @@ La sesión de demostración se guarda únicamente en el navegador. Para salir, p
 
 ### 2. Dashboard
 
-Es la pantalla principal. Resume el total de pedidos, entregas puntuales y tardías, tasa de retraso, cantidad de predicciones y riesgo general. Los gráficos muestran evolución mensual, distribución de entregas, pedidos por región y retrasos por tipo de envío.
+Es la pantalla principal. Resume el total de pedidos, entregas puntuales y tardías, tasa de retraso, cantidad de predicciones y riesgo general. Los gráficos muestran evolución mensual, distribución de entregas, pedidos por zona logística y retrasos por tipo de envío.
 
 ### 3. Pedidos
 
-Permite revisar la información histórica enviada desde la base de datos: fecha, región, distancia, envío, carga, peso y estado de entrega. Selecciona un pedido para ver su detalle.
+Permite revisar la información histórica enviada desde la base de datos: fecha, departamento, zona logística, transporte, distancia, envío, carga, peso y estado. Selecciona un pedido para ver su detalle.
 
 ### 4. Predicción de entrega
 
@@ -83,7 +83,7 @@ Los valores deben corresponder a un pedido plausible; el backend valida distanci
 
 ### 5. Analítica
 
-Muestra comparaciones de tasas de retraso por región, tipo de envío, distancia y tiempo de preparación, además de distribución de pedidos y tendencia temporal. Todas las gráficas consumen los agregados generados por la API.
+Muestra comparaciones de tasas de retraso por departamento, zona logística, tipo de envío, distancia y tiempo de preparación, además de distribución de pedidos y tendencia temporal. Todas las gráficas consumen los agregados generados por la API.
 
 ### 6. Modelo ML
 
