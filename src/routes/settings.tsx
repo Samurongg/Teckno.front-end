@@ -1,75 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppLayout } from "@/layouts/AppLayout";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { API_BASE_URL } from "@/services/api";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({
-    meta: [
-      { title: "Configuración — TecnoMarket Analytics" },
-      {
-        name: "description",
-        content:
-          "Parámetros de conexión con la API, umbrales de riesgo y alertas de la plataforma.",
-      },
-      { property: "og:title", content: "Configuración — TecnoMarket Analytics" },
-      {
-        property: "og:description",
-        content: "Ajusta la fuente de datos y los umbrales del modelo.",
-      },
-    ],
-  }),
+  head: () => ({ meta: [{ title: "Configuración — TecnoMarket Analytics" }] }),
   component: SettingsPage,
 });
 
 function SettingsPage() {
   return (
-    <AppLayout
-      title="Configuración"
-      subtitle="Fuente de datos, umbrales del modelo y notificaciones"
-    >
+    <AppLayout title="Configuración" subtitle="Información de conexión y criterios de riesgo">
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="panel space-y-4 p-5">
           <h2 className="text-sm font-semibold">Conexión con el backend</h2>
-          <div className="space-y-1.5">
-            <Label className="text-xs">URL base de la API (FastAPI)</Label>
-            <Input defaultValue="http://localhost:8000" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Endpoint de predicción</Label>
-            <Input defaultValue="/api/predict" />
-          </div>
+          <p className="text-sm">
+            API: <span className="break-all">{API_BASE_URL}</span>
+          </p>
           <p className="text-xs text-muted-foreground">
-            Mientras no exista backend, la plataforma opera con datos mock desde la capa de
-            servicios.
+            La dirección se configura mediante VITE_API_BASE_URL al iniciar la aplicación. Si la API
+            no está disponible, se mostrará un error de conexión.
           </p>
         </div>
-
         <div className="panel space-y-4 p-5">
-          <h2 className="text-sm font-semibold">Umbrales y alertas</h2>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Umbral de riesgo alto (%)</Label>
-            <Input type="number" defaultValue={66} />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">Umbral de riesgo medio (%)</Label>
-            <Input type="number" defaultValue={35} />
-          </div>
-          <div className="flex items-center justify-between rounded-lg border border-border p-3">
-            <div>
-              <p className="text-sm font-medium">Alertas de riesgo alto</p>
-              <p className="text-xs text-muted-foreground">Notificar al equipo de operaciones</p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <div className="flex items-center justify-between rounded-lg border border-border p-3">
-            <div>
-              <p className="text-sm font-medium">Reentrenamiento semanal</p>
-              <p className="text-xs text-muted-foreground">Programado los domingos 04:00 UTC</p>
-            </div>
-            <Switch defaultChecked />
-          </div>
+          <h2 className="text-sm font-semibold">Niveles de riesgo</h2>
+          <p className="text-sm">Alto: desde 70 %. Medio: desde 35 %. Bajo: menos de 35 %.</p>
+          <p className="text-xs text-muted-foreground">
+            Estos niveles los determina el backend. Las alertas y el reentrenamiento automático no
+            están configurados desde esta pantalla.
+          </p>
         </div>
       </div>
     </AppLayout>

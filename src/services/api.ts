@@ -162,6 +162,7 @@ export async function predictDelivery(input: any): Promise<PredictionResultData>
   const diasEstimados = Math.max(1, Math.round(horasEstimadas / 24));
 
   const payload = {
+    order_id: input.orderId?.trim() || null,
     departamento_destino: input.department,
     modo_transporte: input.transportMode,
     tipo_envio: normalizarTipoEnvio(input.shippingType || input.tipo_envio),
@@ -181,6 +182,8 @@ export async function predictDelivery(input: any): Promise<PredictionResultData>
   });
 
   return {
+    predictionId: res.prediction_id,
+    orderId: res.order_id ?? null,
     label: res.resultado.toUpperCase(),
     probability: Math.round(res.probabilidad_retraso),
     risk: res.nivel_riesgo.toUpperCase() as "BAJO" | "MEDIO" | "ALTO",

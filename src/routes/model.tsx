@@ -127,7 +127,7 @@ function ModelPage() {
                     outerRadius={95}
                     paddingAngle={3}
                   >
-                    {data.classDistribution.map((_, i) => (
+                    {data.classDistribution.map((_: { name: string; value: number }, i: number) => (
                       <Cell key={i} fill={i === 0 ? "var(--chart-2)" : "var(--chart-4)"} />
                     ))}
                   </Pie>

@@ -52,7 +52,7 @@ export const MOCK_ORDERS: Order[] = (() => {
         prepTimeH / 26 +
         logisticLoad / 320 +
         (shippingType === "Estándar" ? 0.12 : 0) +
-        (shippingType === "Same Day" ? 0.08 : 0) -
+        (shippingType === "Mismo D\u00eda" ? 0.08 : 0) -
         (priority === "Alta" ? 0.08 : 0) +
         rand() * 0.12,
     );

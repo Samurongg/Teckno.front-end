@@ -163,9 +163,11 @@ function AnalyticsPage() {
                     outerRadius={95}
                     paddingAngle={3}
                   >
-                    {data.ordersDistribution.map((_, i) => (
-                      <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                    ))}
+                    {data.ordersDistribution.map(
+                      (_: { name: string; value: number }, i: number) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ),
+                    )}
                   </Pie>
                   <Tooltip {...tooltipStyle} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
@@ -213,7 +215,7 @@ function AnalyticsPage() {
                 Contribución relativa al riesgo de retraso según el modelo
               </p>
               <div className="mt-4 space-y-3">
-                {data.riskDrivers.map((d) => (
+                {data.riskDrivers.map((d: { variable: string; impact: number }) => (
                   <div key={d.variable}>
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-muted-foreground">{d.variable}</span>

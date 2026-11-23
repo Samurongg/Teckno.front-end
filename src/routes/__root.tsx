@@ -117,8 +117,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="es" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try { document.documentElement.classList.add(localStorage.getItem('tecnomarket-theme') === 'light' ? 'light' : 'dark'); } catch (_) { document.documentElement.classList.add('dark'); }`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>

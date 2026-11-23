@@ -78,6 +78,7 @@ export interface DashboardSummary {
 }
 
 export interface PredictionInput {
+  orderId?: string;
   shippingType: ShippingType;
   distanceKm: number;
   estimatedTimeH: number;
@@ -92,6 +93,8 @@ export interface PredictionInput {
 }
 
 export interface PredictionResultData {
+  predictionId: number;
+  orderId: string | null;
   label: "ENTREGA TARDÍA" | "ENTREGA A TIEMPO";
   probability: number;
   risk: RiskLevel;

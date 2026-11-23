@@ -8,6 +8,10 @@ export function PredictionResult({ data }: { data: PredictionResultData }) {
   const late = data.label === "ENTREGA TARDÍA";
   return (
     <div className="panel space-y-5 p-5">
+      <p className="text-xs text-muted-foreground">
+        Registro #{data.predictionId} ·{" "}
+        {data.orderId ? `Pedido de referencia: ${data.orderId}` : "Simulación sin pedido asociado"}
+      </p>
       <div className="flex items-center gap-3">
         <span
           className={cn(

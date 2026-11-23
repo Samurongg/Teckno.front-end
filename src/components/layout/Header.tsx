@@ -1,4 +1,5 @@
-import { Bell, LogOut, Menu, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Bell, LogOut, Menu, Moon, Search, Sun } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -12,6 +13,23 @@ interface HeaderProps {
 }
 
 export function Header({ title, subtitle, showSearch = true }: HeaderProps) {
+  const [isLight, setIsLight] = useState(false);
+  useEffect(() => {
+    setIsLight(document.documentElement.classList.contains("light"));
+  }, []);
+
+  function toggleTheme() {
+    const light = !isLight;
+    document.documentElement.classList.toggle("light", light);
+    document.documentElement.classList.toggle("dark", !light);
+    setIsLight(light);
+    try {
+      localStorage.setItem("tecnomarket-theme", light ? "light" : "dark");
+    } catch {
+      // El cambio visual sigue funcionando si el almacenamiento no está disponible.
+    }
+  }
+
   const user = getSession();
   const initials = user?.name
     .split(" ")
@@ -50,6 +68,16 @@ export function Header({ title, subtitle, showSearch = true }: HeaderProps) {
           <Input placeholder="Buscar pedido, departamento…" className="pl-9" />
         </div>
       ) : null}
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleTheme}
+        aria-label={isLight ? "Activar modo oscuro" : "Activar modo claro"}
+        title={isLight ? "Activar modo oscuro" : "Activar modo claro"}
+      >
+        {isLight ? <Moon className="size-5" /> : <Sun className="size-5" />}
+      </Button>
 
       <Button variant="ghost" size="icon" className="relative">
         <Bell className="size-5" />

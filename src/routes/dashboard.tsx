@@ -187,7 +187,7 @@ function DashboardPage() {
                     outerRadius={95}
                     paddingAngle={3}
                   >
-                    {data.distribution.map((_, i) => (
+                    {data.distribution.map((_: { name: string; value: number }, i: number) => (
                       <Cell key={i} fill={i === 0 ? "var(--chart-2)" : "var(--chart-4)"} />
                     ))}
                   </Pie>

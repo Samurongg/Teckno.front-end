@@ -65,7 +65,7 @@ export function PredictionForm({
       distanceKm,
       shippingType,
       estimatedTimeH: estimatedHours(distanceKm, shippingType),
-      transportMode: config.transportModes[0],
+      transportMode: config.transportModes[0] ?? "Terrestre",
     }));
   };
 
@@ -109,6 +109,24 @@ export function PredictionForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5 sm:col-span-2">
+          <Label htmlFor="prediction-order-id" className="text-xs">
+            Pedido de referencia (opcional)
+          </Label>
+          <Input
+            id="prediction-order-id"
+            value={form.orderId ?? ""}
+            maxLength={20}
+            placeholder="Código del pedido histórico"
+            onChange={(event) => set("orderId", event.target.value)}
+            aria-describedby="prediction-order-help"
+          />
+          <p id="prediction-order-help" className="text-[11px] text-muted-foreground">
+            Vincula esta simulación a un pedido del historial. Ingresa sus características abajo o
+            déjalo vacío para simular un escenario sin pedido asociado.
+          </p>
+        </div>
+
         <div className="space-y-1.5">
           <Label className="text-xs">Departamento de destino</Label>
           <Select
