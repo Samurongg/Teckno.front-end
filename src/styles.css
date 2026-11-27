@@ -162,3 +162,130 @@
   background-clip: text;
   color: transparent;
 }
+
+/* Entrada por sección: la búsqueda y las actualizaciones de datos no reinician la página. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes section-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: page-enter 280ms ease-out backwards;
+}
+
+.page-transition > * {
+  animation: section-enter 320ms ease-out backwards;
+}
+.page-transition > :nth-child(2) {
+  animation-delay: 45ms;
+}
+.page-transition > :nth-child(3) {
+  animation-delay: 90ms;
+}
+.page-transition > :nth-child(n + 4) {
+  animation-delay: 135ms;
+}
+
+.nav-motion {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+.nav-motion svg {
+  transition: transform 180ms ease;
+}
+.nav-motion:active {
+  transform: scale(0.98);
+}
+.nav-motion[aria-current="page"] svg {
+  transform: scale(1.1);
+}
+
+@media (hover: hover) {
+  .nav-motion:hover {
+    transform: translateX(3px);
+  }
+  .nav-motion:hover svg {
+    transform: scale(1.1);
+  }
+}
+
+.app-shell button {
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease,
+    scale 160ms ease;
+}
+.app-shell button:not(:disabled):active {
+  scale: 0.97;
+}
+
+@keyframes route-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+.route-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  overflow: hidden;
+  z-index: 100;
+  background: var(--muted);
+}
+.route-loading span {
+  display: block;
+  width: 30%;
+  height: 100%;
+  background: var(--primary);
+  animation: route-progress 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition,
+  .page-transition > *,
+  .route-loading span {
+    animation: none;
+  }
+  .nav-motion,
+  .nav-motion svg,
+  .app-shell button {
+    transition: none;
+  }
+  .nav-motion:hover,
+  .nav-motion:active,
+  .nav-motion:hover svg,
+  .nav-motion[aria-current="page"] svg {
+    transform: none;
+  }
+  .app-shell button:not(:disabled):active {
+    scale: 1;
+  }
+  .route-loading span {
+    width: 100%;
+  }
+}

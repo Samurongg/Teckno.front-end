@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUpDown, Search, X } from "lucide-react";
 import type { Order } from "@/types";
 import { SHIPPING_TYPES } from "@/lib/mock-data";
@@ -34,11 +34,14 @@ const PAGE_SIZE = 10;
 export function OrdersTable({
   orders,
   onSelect,
+  query,
+  onQueryChange,
 }: {
   orders: Order[];
   onSelect: (order: Order) => void;
+  query: string;
+  onQueryChange: (query: string) => void;
 }) {
-  const [query, setQuery] = useState("");
   const [department, setDepartment] = useState<string>(ALL);
   const [shipping, setShipping] = useState<string>(ALL);
   const [status, setStatus] = useState<string>(ALL);
@@ -47,15 +50,23 @@ export function OrdersTable({
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortAsc, setSortAsc] = useState(false);
   const [page, setPage] = useState(1);
+  useEffect(() => {
+    setPage(1);
+  }, [query]);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const normalize = (value: string) =>
+      value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    const q = normalize(query.trim());
     const rows = orders.filter((o) => {
       if (
         q &&
-        !`${o.id} ${o.department} ${o.logisticZone} ${o.transportMode} ${o.shippingType}`
-          .toLowerCase()
-          .includes(q)
+        !normalize(
+          `${o.id} ${o.department} ${o.logisticZone} ${o.transportMode} ${o.shippingType}`,
+        ).includes(q)
       )
         return false;
       if (department !== ALL && o.department !== department) return false;
@@ -87,7 +98,7 @@ export function OrdersTable({
   };
 
   const reset = () => {
-    setQuery("");
+    onQueryChange("");
     setDepartment(ALL);
     setShipping(ALL);
     setStatus(ALL);
@@ -117,7 +128,7 @@ export function OrdersTable({
           <Input
             value={query}
             onChange={(e) => {
-              setQuery(e.target.value);
+              onQueryChange(e.target.value);
               setPage(1);
             }}
             placeholder="Buscar por ID, departamento, zona o envío"
@@ -198,7 +209,14 @@ export function OrdersTable({
       </div>
 
       {rows.length === 0 ? (
-        <EmptyState />
+        <EmptyState
+          title="No se encontraron pedidos"
+          description={
+            query
+              ? `No hay coincidencias para “${query}” con los filtros actuales. Prueba otro término o pulsa Limpiar.`
+              : "No hay pedidos con los filtros actuales. Pulsa Limpiar para ver todos."
+          }
+        />
       ) : (
         <div className="overflow-x-auto">
           <Table>

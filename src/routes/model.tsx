@@ -18,6 +18,7 @@ import { AppLayout } from "@/layouts/AppLayout";
 import { ErrorState, LoadingState } from "@/components/common/States";
 import { ChartCard, axisProps, tooltipStyle } from "@/components/charts/ChartCard";
 import { getModelInfo } from "@/services/api";
+import { TrainingPanel } from "@/components/model/TrainingPanel";
 
 export const Route = createFileRoute("/model")({
   head: () => ({
@@ -58,6 +59,7 @@ function ModelPage() {
       title="Modelo ML"
       subtitle="Rendimiento y explicabilidad del modelo de predicción de retrasos"
     >
+      <TrainingPanel />
       {isError ? (
         <ErrorState message={error.message} />
       ) : isLoading || !data ? (

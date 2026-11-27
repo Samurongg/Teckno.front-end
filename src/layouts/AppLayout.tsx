@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { getSession } from "@/lib/auth";
+import { useRouterState } from "@tanstack/react-router";
 
 interface AppLayoutProps {
   title: string;
@@ -10,6 +11,8 @@ interface AppLayoutProps {
 }
 
 export function AppLayout({ title, subtitle, children }: AppLayoutProps) {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const navigating = useRouterState({ select: (state) => state.status === "pending" });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -25,7 +28,12 @@ export function AppLayout({ title, subtitle, children }: AppLayoutProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="app-shell flex min-h-screen bg-background">
+      {navigating && (
+        <div className="route-loading" role="status" aria-label="Cambiando de sección">
+          <span />
+        </div>
+      )}
       <div className="hidden lg:block">
         <div className="sticky top-0 h-screen">
           <Sidebar />
@@ -33,7 +41,9 @@ export function AppLayout({ title, subtitle, children }: AppLayoutProps) {
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
         <Header title={title} subtitle={subtitle} />
-        <main className="flex-1 space-y-6 p-4 md:p-6">{children}</main>
+        <main key={pathname} className="page-transition flex-1 space-y-6 p-4 md:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

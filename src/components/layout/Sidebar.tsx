@@ -23,7 +23,7 @@ const bottomNav = [
 ] as const;
 
 const itemBase =
-  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
+  "nav-motion flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground";
 const itemActive = "bg-sidebar-accent text-sidebar-primary border-l-2 border-sidebar-primary";
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {

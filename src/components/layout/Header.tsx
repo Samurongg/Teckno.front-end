@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Bell, LogOut, Menu, Moon, Search, Sun } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Bell, LogOut, Menu, Moon, Sun } from "lucide-react";
+import { GlobalOrderSearch } from "./GlobalOrderSearch";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./Sidebar";
@@ -62,12 +62,7 @@ export function Header({ title, subtitle, showSearch = true }: HeaderProps) {
         {subtitle ? <p className="truncate text-xs text-muted-foreground">{subtitle}</p> : null}
       </div>
 
-      {showSearch ? (
-        <div className="relative hidden md:block md:w-64">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Buscar pedido, departamento…" className="pl-9" />
-        </div>
-      ) : null}
+      {showSearch ? <GlobalOrderSearch /> : null}
 
       <Button
         variant="ghost"

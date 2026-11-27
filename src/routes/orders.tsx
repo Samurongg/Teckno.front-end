@@ -12,6 +12,8 @@ import { OrderDetails } from "@/components/orders/OrderDetails";
 import { getOrders } from "@/services/orders";
 
 export const Route = createFileRoute("/orders")({
+  validateSearch: (search: Record<string, unknown>): { q?: string } =>
+    typeof search["q"] === "string" && search["q"].trim() ? { q: search["q"] } : {},
   head: () => ({
     meta: [
       { title: "Pedidos históricos — TecnoMarket Analytics" },
@@ -31,6 +33,8 @@ export const Route = createFileRoute("/orders")({
 });
 
 function OrdersPage() {
+  const { q = "" } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["orders"],
     queryFn: getOrders,
@@ -63,7 +67,14 @@ function OrdersPage() {
       {isLoading || !data ? (
         <LoadingState label="Cargando pedidos históricos desde la base de datos…" />
       ) : (
-        <OrdersTable orders={data} onSelect={setSelected} />
+        <OrdersTable
+          orders={data}
+          onSelect={setSelected}
+          query={q}
+          onQueryChange={(query) => {
+            void navigate({ search: query.trim() ? { q: query } : {}, replace: true });
+          }}
+        />
       )}
 
       <OrderDetails order={selected} onOpenChange={(open) => !open && setSelected(null)} />
